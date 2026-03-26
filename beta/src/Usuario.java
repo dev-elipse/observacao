@@ -1,25 +1,23 @@
 abstract class Usuario {
-    private int id;
     private String nome;
     private String email;
-    private boolean anonimo;
+    private Boolean isAdmin;
 
-    public Usuario(int id, String nome, String email, boolean anonimo) {
-        this.id = id;
+    public Usuario(String nome, String email, Boolean isAdmin) {
         this.nome = nome;
         this.email = email;
-        this.anonimo = anonimo;
-    }
-
-    public int getId() {
-        return id;
+        this.isAdmin = isAdmin;
     }
 
     public String getNome() {
         return nome;
     }
 
-    public boolean isAnonimo() {
-        return anonimo;
+    public String getEmail() {
+        return email;
+    }
+
+    public Boolean getAdmin() {
+        return isAdmin;
     }
 }

@@ -16,14 +16,12 @@ public class Solicitacao {
 
     public void adicionarHistorico(HistoricoStatus historicoStatus){
         historico.add(historicoStatus);
-        System.out.println("DEBUG -- " + historicoStatus.getStatus() + " adicionado ao histórico");
     }
 
-    public void atualizarStatus(StatusSolicitacao novoStatus, String comentario, ServidorPublico servidorPublico){
-        HistoricoStatus h = new HistoricoStatus(novoStatus, comentario, servidorPublico);
+    public void atualizarStatus(StatusSolicitacao novoStatus, String comentario, Usuario usuario){
+        HistoricoStatus h = new HistoricoStatus(novoStatus, comentario, usuario);
         adicionarHistorico(h);
         statusAtual = novoStatus;
-        System.out.println("DEBUG -- Status alterado para: " + statusAtual);
     }
 
     private String gerarProtocolo(){

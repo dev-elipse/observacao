@@ -1,13 +1,13 @@
-public class Categoria {
-    private String id;
-    private String nome;
-
-    public Categoria(String id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
-
-    public String getNome() {
-        return nome;
-    }
+public enum Categoria {
+    INFRAESTRUTURA_URBANA,
+    ILUMINACAO_PUBLICA,
+    LIMPEZA_URBANA,
+    MEIO_AMBIENTE,
+    TRANSITO_MOBILIDADE,
+    SAUDE_PUBLICA,
+    EDUCACAO,
+    SEGURANCA_PUBLICA,
+    OBRAS_PUBLICAS,
+    SANEAMENTO,
+    SERVICOS_PUBLICOS
 }

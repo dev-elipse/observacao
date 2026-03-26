@@ -4,9 +4,9 @@ public class HistoricoStatus {
     private StatusSolicitacao status;
     private LocalDateTime dataHora  = LocalDateTime.now();
     private String comentario;
-    private ServidorPublico responsavel;
+    private Usuario responsavel;
 
-    public HistoricoStatus(StatusSolicitacao status, String comentario, ServidorPublico responsavel) {
+    public HistoricoStatus(StatusSolicitacao status, String comentario, Usuario responsavel) {
         if (status == null || comentario == null){
             throw new IllegalArgumentException("os campos não podem ser nulos");
         }
@@ -27,7 +27,7 @@ public class HistoricoStatus {
         return dataHora;
     }
 
-    public ServidorPublico getResponsavel() {
+    public Usuario getResponsavel() {
         return responsavel;
     }
 }

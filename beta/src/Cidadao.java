@@ -1,16 +1,22 @@
 public class Cidadao extends Usuario{
     private String telefone;
+    private Boolean isAnonimo;
 
-    public Cidadao(int id, String nome, String email, boolean anonimo, String telefone) {
-        if (nome == null || email == null || telefone == null){
+    public Cidadao(String nome, String email, Boolean isAnonimo, String telefone) {
+        if (nome == null || email == null || isAnonimo == null|| telefone == null){
             throw new IllegalArgumentException("os campos não podem ser nulos");
         }
 
-        super(id, nome, email, anonimo);
+        super(nome, email, false);
         this.telefone = telefone;
+        this.isAnonimo = isAnonimo;
     }
 
     public String getTelefone() {
         return telefone;
+    }
+
+    public Boolean getIsAnonimo() {
+        return isAnonimo;
     }
 }

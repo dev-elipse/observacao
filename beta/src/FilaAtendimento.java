@@ -5,6 +5,10 @@ import java.util.List;
 public class FilaAtendimento {
     private List<Solicitacao> solicitacoes;
 
+    public FilaAtendimento() {
+        this.solicitacoes = new ArrayList<>();
+    }
+
     public FilaAtendimento(List<Solicitacao> solicitacoes) {
         this.solicitacoes = solicitacoes;
     }
@@ -27,7 +31,7 @@ public class FilaAtendimento {
 
     public List<Solicitacao> listarPorCategoria(){
         List<Solicitacao> solicitacoesPorCategoria = new ArrayList<>(solicitacoes);
-        solicitacoesPorCategoria.sort(Comparator.comparing(s -> s.getCategoria().getNome()));
+        solicitacoesPorCategoria.sort(Comparator.comparing(Solicitacao::getCategoria));
         return solicitacoesPorCategoria;
     }
 

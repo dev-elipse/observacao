@@ -1,12 +1,12 @@
 public class ServidorPublico extends Usuario{
     private String cargo;
 
-    public ServidorPublico(int id, String nome, String email, boolean anonimo, String cargo) {
-        if (nome == null || email == null || cargo == null){
+    public ServidorPublico(String nome, String email, String cargo) {
+        if (nome == null || email == null || cargo == null) {
             throw new IllegalArgumentException("os campos não podem ser nulos");
         }
 
-        super(id, nome, email, anonimo);
+        super(nome, email, true);
         this.cargo = cargo;
     }
 
