@@ -9,5 +9,6 @@ public enum Categoria {
     SEGURANCA_PUBLICA,
     OBRAS_PUBLICAS,
     SANEAMENTO,
-    SERVICOS_PUBLICOS
+    SERVICOS_PUBLICOS,
+    OUTROS
 }

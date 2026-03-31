@@ -1,4 +1,3 @@
-import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +29,15 @@ public class Solicitacao {
         return "SOL" + ano + "-" + numeroFormatado;
     }
 
-    public Solicitacao(String descricao, String localizacao, Prioridade prioridade, Usuario usuario, Categoria categoria) {
+    public Solicitacao(Usuario usuario, Categoria categoria, String descricao, String localizacao, Prioridade prioridade) {
         contador++;
         this.protocolo = gerarProtocolo();
+        this.usuario = usuario;
+        this.categoria = categoria;
         this.descricao = descricao;
         this.localizacao = localizacao;
         this.prioridade = prioridade;
         this.statusAtual = StatusSolicitacao.ABERTO;
-        this.usuario = usuario;
-        this.categoria = categoria;
         this.historico = new ArrayList<>();
         HistoricoStatus h = new HistoricoStatus(statusAtual, "Solicitação aberta", null);
         adicionarHistorico(h);

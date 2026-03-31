@@ -1,6 +1,4 @@
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SolicitacoesService {
     private FilaAtendimento fila;
@@ -9,53 +7,77 @@ public class SolicitacoesService {
         this.fila = new FilaAtendimento();
     }
 
-    public void criarSolicitacao(Usuario usuario, Categoria categoria, String descricao, String localizacao, Prioridade prioridade){
-        Solicitacao s = new Solicitacao(descricao, localizacao, prioridade, usuario, categoria);
+    public Solicitacao criarSolicitacao(Usuario usuario, Categoria categoria, String descricao, String localizacao, Prioridade prioridade){
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuário não pode ser nulo");
+        }
+        if (categoria == null) {
+            throw new IllegalArgumentException("Categoria não pode ser nula");
+        }
+        if (prioridade == null) {
+            throw new IllegalArgumentException("Prioridade não pode ser nula");
+        }
+        if (descricao == null || descricao.isBlank()) {
+            throw new IllegalArgumentException("Descrição é obrigatória");
+        }
+        if (localizacao == null || localizacao.isBlank()) {
+            throw new IllegalArgumentException("Localização é obrigatória");
+        }
+
+        Solicitacao s = new Solicitacao(
+                usuario,
+                categoria,
+                localizacao.trim(),
+                descricao.trim(),
+                prioridade
+        );
+
         fila.adicionarSolicitacao(s);
+        return s;
     }
 
-    public void listarSolicitacoes(){
-        List<Solicitacao> listaSolicitacoes = fila.getSolicitacoes();
-        for (Solicitacao solicitacao : listaSolicitacoes){
-                System.out.printf("║  %-22.22s  %-24.24s  %-15.15s ║\n", solicitacao.getProtocolo(), solicitacao.getCategoria(), solicitacao.getStatusAtual().statusFormatado());
-                System.out.println("║--------------------------------------------------------------------║");
-                imprimirTextoFormatado(solicitacao.getDescricao(), 66);
-                System.out.println("║                                                                    ║");
-                imprimirTextoFormatado("📍" + solicitacao.getLocalizacao(), 66);
-                System.out.println("╚════════════════════════════════════════════════════════════════════╝");
-            }
+    public List<Solicitacao> listarSolicitacoes(){
+        return fila.getSolicitacoes();
+    }
+
+    public List<Solicitacao> listarPorPrioridade(){
+        return fila.listarPorPrioridade();
+    }
+
+    public List<Solicitacao> listarPorCategoria(){
+        return fila.listarPorCategoria();
+    }
+
+    public List<Solicitacao> listarPorStatus(){
+        return fila.listarPorStatus();
     }
 
     public Solicitacao buscarPorProtocolo(String protocolo){
-        List<Solicitacao> lista = fila.getSolicitacoes();
-        for (Solicitacao s : lista){
-            if (s.getProtocolo().equals(protocolo)) {
-                return s;
-            }
+        if (protocolo == null || protocolo.isBlank()){
+            throw new IllegalArgumentException("Protocolo inválido");
         }
-        return null;
+
+        return fila.getSolicitacoes().stream()
+                .filter(s -> protocolo.equals(s.getProtocolo()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada"));
     }
 
     public void atualizarStatus(String protocolo, StatusSolicitacao status, String comentario, Usuario usuario){
+        if (protocolo == null) {
+            throw new IllegalArgumentException("Protocolo não pode ser nulo");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status não pode ser nulo");
+        }
+        if (comentario == null || comentario.isBlank()) {
+            throw new IllegalArgumentException("Comentário é obrigatório");
+        }
+        if (usuario == null) {
+            throw new IllegalArgumentException("Servidor Público não pode ser nulo");
+        }
+
         Solicitacao s = buscarPorProtocolo(protocolo);
         s.atualizarStatus(status, comentario, usuario);
-    }
-
-    private static void imprimirTextoFormatado(String texto, int largura){
-        String[] palavras = texto.split(" ");
-        String linha = "";
-
-        for(String palavra : palavras){
-            if((linha + palavra).length() > largura){
-                System.out.printf("║ %-" + largura + "s ║\n", linha);
-                linha = palavra + " ";
-            } else {
-                linha += palavra + " ";
-            }
-        }
-
-        if (!linha.isEmpty()) {
-            System.out.printf("║ %-" + largura + "s ║\n", linha);
-        }
     }
 }

@@ -35,6 +35,12 @@ public class FilaAtendimento {
         return solicitacoesPorCategoria;
     }
 
+    public List<Solicitacao> listarPorStatus(){
+        List<Solicitacao> solicitacaoPorStatus = new ArrayList<>(solicitacoes);
+        solicitacaoPorStatus.sort(Comparator.comparing(Solicitacao::getStatusAtual));
+        return solicitacaoPorStatus;
+    }
+
     public List<Solicitacao> getSolicitacoes() {
         return solicitacoes;
     }
