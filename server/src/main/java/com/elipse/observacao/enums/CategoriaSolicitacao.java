@@ -1,0 +1,16 @@
+package com.elipse.observacao.enums;
+
+public enum CategoriaSolicitacao {
+    INFRAESTRUTURA_URBANA,
+    ILUMINACAO_PUBLICA,
+    LIMPEZA_URBANA,
+    MEIO_AMBIENTE,
+    TRANSITO_MOBILIDADE,
+    SAUDE_PUBLICA,
+    EDUCACAO,
+    SEGURANCA_PUBLICA,
+    OBRAS_PUBLICAS,
+    SANEAMENTO,
+    SERVICOS_PUBLICOS,
+    OUTROS
+}
