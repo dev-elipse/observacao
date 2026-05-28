@@ -38,7 +38,7 @@ create type tipo_usuario as ENUM (
 );
 
 create table usuarios (
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE,
     numero_telefone VARCHAR(20) UNIQUE,
@@ -58,7 +58,7 @@ create table usuarios (
 );
 
 create table solicitacoes (
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     categoria categoria_solicitacao NOT NULL,
     descricao TEXT NOT NULL,
     prioridade prioridade_solicitacao DEFAULT 'MEDIA',
@@ -79,7 +79,7 @@ create table solicitacoes (
 );
 
 create table historico_solicitacoes (
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     solicitacao_id INT NOT NULL,
     status status_solicitacao NOT NULL,
     comentario TEXT,
@@ -92,7 +92,7 @@ create table historico_solicitacoes (
 );
 
 create table anexos (
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     solicitacao_id INT NOT NULL,
     url_arquivo TEXT NOT NULL UNIQUE,
 
@@ -101,7 +101,7 @@ create table anexos (
 );
 
 create table enderecos (
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     solicitacao_id INT NOT NULL UNIQUE,
     logradouro VARCHAR(100) NOT NULL,
     ponto_referencia VARCHAR(100),
