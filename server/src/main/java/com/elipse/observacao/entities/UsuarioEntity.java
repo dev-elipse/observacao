@@ -5,14 +5,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "usuarios", schema = "observacao_db")
+@Table(name = "usuarios")
 @Getter
 @Setter
 public class UsuarioEntity {
@@ -25,7 +21,7 @@ public class UsuarioEntity {
     @Size(max = 100)
     private String nome;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     @Size(max = 100)
     private String email;
 
@@ -37,17 +33,13 @@ public class UsuarioEntity {
     @Size(max = 200)
     private String cargo;
 
+    @Column(name = "senha")
+    private String senha;
+
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "tipo", nullable = false, columnDefinition = "tipo_usuario")
+    @Column(name = "tipo", nullable = false)
     private TipoUsuario tipo;
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<SolicitacaoEntity> solicitacoes;
-
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
-    private OffsetDateTime updatedAt;
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public class SolicitacaoResponseDTO {
     private Long id;
-
+    private String endereco;
     private CategoriaSolicitacao categoria;
     private String descricao;
     private PrioridadeSolicitacao prioridade;
@@ -23,4 +23,5 @@ public class SolicitacaoResponseDTO {
     private Long usuarioId;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+
 }

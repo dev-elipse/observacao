@@ -27,7 +27,7 @@ public class SolicitacaoMapper {
                 dto.getAnonima() != null
                         ? dto.getAnonima()
                         : false);
-
+        entity.setEndereco(dto.getEndereco());    
         entity.setUsuario(usuario);
 
         return entity;
@@ -42,6 +42,7 @@ public class SolicitacaoMapper {
         dto.setStatus(entity.getStatus());
         dto.setPrioridade(entity.getPrioridade());
         dto.setAnonima(entity.isAnonima());
+        dto.setEndereco(entity.getEndereco());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
 
@@ -61,12 +62,15 @@ public class SolicitacaoMapper {
             entity.setPrioridade(dto.getPrioridade());
         }
 
+        if (dto.getStatus() != null){
+            entity.setStatus(dto.getStatus());
+        }
 
         entity.setAnonima(
                 dto.getAnonima() != null
                         ? dto.getAnonima()
                         : false);
-
+        entity.setEndereco(dto.getEndereco());        
         entity.setUsuario(usuario);
     }
 }

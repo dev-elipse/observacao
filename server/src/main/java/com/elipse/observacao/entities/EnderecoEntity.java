@@ -5,10 +5,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
-@Table(name = "enderecos", schema = "observacao_db")
+@Table(name = "enderecos")
 @Getter
 @Setter
 public class EnderecoEntity {

@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.OffsetDateTime;
-
 @Getter
 @Setter
 public class UsuarioDTO {
@@ -21,12 +19,14 @@ public class UsuarioDTO {
     @Size(max = 100, message = "email must be at most 100 characters")
     private String email;
 
-    @Size(max = 20, message = "numeroTelefone must be at most 15 characters")
+    @Size(max = 20, message = "numeroTelefone must be at most 20 characters")
     private String numeroTelefone;
 
-    @Size(max = 200, message = "cargo must be at most 100 characters")
+    @Size(max = 200, message = "cargo must be at most 200 characters")
     private String cargo;
 
     @NotNull(message = "tipo must not be null")
     private TipoUsuario tipo;
+
+    private String senha;
 }

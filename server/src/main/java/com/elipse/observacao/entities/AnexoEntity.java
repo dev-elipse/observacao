@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "anexos", schema = "observacao_db")
+@Table(name = "anexos")
 @Getter
 @Setter
 public class AnexoEntity {
