@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="client/public/observacao.svg" alt="ObservAção Logo" width="100">
   
   <h2><strong>ObservAção</strong></h2>
   <p><strong>Sistema de gestão de solicitações cidadãs</strong></p>
@@ -8,14 +7,6 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/dev-elipse/observacao?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/dev-elipse/observacao?style=for-the-badge)
 </div>
-
----
-
-## 🎬 Demo
-
-### Fluxo de Registro e Acompanhamento
-
-![Upload Demo](./docs/observacao_demo.gif)
 
 ---
 
@@ -174,11 +165,6 @@ cd observacao
 ```bash
 cd server
 ./mvnw spring-boot:run
-```
-ou
-```bash
-cd server
-./gradlew bootRun
 ```
 Backend will run at:
 ```bash
