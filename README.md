@@ -65,7 +65,7 @@ O **ObservaAção** surge como uma solução GovTech para **conectar cidadãos e
 - Spring Boot
 
 **Banco de Dados**
-- PostgreSQL (produção)
+- MongoDB (produção)
 - H2 (testes)
 
 ---

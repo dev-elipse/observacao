@@ -1,10 +1,10 @@
 package com.elipse.observacao.repositories;
 
 import com.elipse.observacao.entities.UsuarioEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
+public interface UsuarioRepository extends MongoRepository<UsuarioEntity, String> {
     Optional<UsuarioEntity> findByEmail(String email);
 }

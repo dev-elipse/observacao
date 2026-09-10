@@ -1,23 +1,27 @@
 package com.elipse.observacao.entities;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
-@Table(name = "anexos")
+import java.util.UUID;
+
+@Document(collection = "anexos")
 @Getter
 @Setter
 public class AnexoEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+   @Id
+   private String id = UUID.randomUUID().toString();
 
-    @Column(name = "url_arquivo", nullable = false, unique = true, columnDefinition = "TEXT")
-    private String urlArquivo;
+   @Indexed(unique = true)
+   @Field("url_arquivo")
+   private String urlArquivo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solicitacao_id", nullable = false)
-    private SolicitacaoEntity solicitacao;
+   @DBRef(lazy = true)
+   private SolicitacaoEntity solicitacao;
 }

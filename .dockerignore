@@ -1,0 +1,9 @@
+node_modules
+client/node_modules
+server/target
+.git
+.gitignore
+.vscode
+.idea
+npm-debug.log
+*.log

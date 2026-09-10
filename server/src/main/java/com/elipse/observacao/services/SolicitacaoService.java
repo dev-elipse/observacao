@@ -4,11 +4,10 @@ import com.elipse.observacao.dtos.SolicitacaoCreateDTO;
 import com.elipse.observacao.dtos.SolicitacaoResponseDTO;
 import com.elipse.observacao.entities.SolicitacaoEntity;
 import com.elipse.observacao.entities.UsuarioEntity;
+import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.mappers.SolicitacaoMapper;
 import com.elipse.observacao.repositories.SolicitacaoRepository;
 import com.elipse.observacao.repositories.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +49,7 @@ public class SolicitacaoService {
         }
 
         SolicitacaoEntity entity = SolicitacaoMapper.toEntity(dto, usuario);
+        entity.prePersist();
 
         return SolicitacaoMapper.toDTO(solicitacaoRepository.save(entity));
     }
@@ -62,13 +62,13 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
-    public SolicitacaoResponseDTO findById(Long id){
+    public SolicitacaoResponseDTO findById(String id){
         return SolicitacaoMapper.toDTO(solicitacaoRepository
                 .findById(id).orElseThrow(() -> new EntityNotFoundException("solicitacao not found")));
     }
 
     @Transactional
-    public SolicitacaoResponseDTO update(Long id, SolicitacaoCreateDTO dto){
+    public SolicitacaoResponseDTO update(String id, SolicitacaoCreateDTO dto){
         validarAnonimato(dto);
 
         SolicitacaoEntity entity = solicitacaoRepository
@@ -85,12 +85,13 @@ public class SolicitacaoService {
         }
 
         SolicitacaoMapper.updateEntity(entity, dto, usuario);
+        entity.preUpdate();
 
-        return SolicitacaoMapper.toDTO(entity);
+        return SolicitacaoMapper.toDTO(solicitacaoRepository.save(entity));
     }
 
     @Transactional
-    public void delete(Long id){
+    public void delete(String id){
         if (!solicitacaoRepository.existsById(id)){
             throw new EntityNotFoundException("solicitacao not found");
         }

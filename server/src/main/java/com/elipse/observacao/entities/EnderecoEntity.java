@@ -1,41 +1,43 @@
 package com.elipse.observacao.entities;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
-@Table(name = "enderecos")
+import java.util.UUID;
+
+@Document(collection = "enderecos")
 @Getter
 @Setter
 public class EnderecoEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+   @Id
+   private String id = UUID.randomUUID().toString();
 
-    @Column(name = "logradouro", nullable = false)
-    @Size(max = 100)
-    private String logradouro;
+   @Field("logradouro")
+   @Size(max = 100)
+   private String logradouro;
 
-    @Column(name = "ponto_referencia")
-    @Size(max = 100)
-    private String pontoReferencia;
+   @Field("ponto_referencia")
+   @Size(max = 100)
+   private String pontoReferencia;
 
-    @Column(name = "bairro", nullable = false)
-    @Size(max = 50)
-    private String bairro;
+   @Field("bairro")
+   @Size(max = 50)
+   private String bairro;
 
-    @Column(name = "cidade", nullable = false)
-    @Size(max = 50)
-    private String cidade;
+   @Field("cidade")
+   @Size(max = 50)
+   private String cidade;
 
-    @Column(name = "cep", nullable = false)
-    @Size(max = 20)
-    private String cep;
+   @Field("cep")
+   @Size(max = 20)
+   private String cep;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solicitacao_id", nullable = false, unique = true)
-    private SolicitacaoEntity solicitacao;
+   @DBRef(lazy = true)
+   private SolicitacaoEntity solicitacao;
 }

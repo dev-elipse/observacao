@@ -2,9 +2,9 @@ package com.elipse.observacao.services;
 
 import com.elipse.observacao.dtos.UsuarioDTO;
 import com.elipse.observacao.entities.UsuarioEntity;
+import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.mappers.UsuarioMapper;
 import com.elipse.observacao.repositories.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +59,7 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public UsuarioDTO findById(Long id) {
+    public UsuarioDTO findById(String id) {
         return UsuarioMapper.toDTO(usuarioRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado")));
@@ -81,17 +81,17 @@ public class UsuarioService {
     }
 
     @Transactional
-    public UsuarioDTO update(Long id, UsuarioDTO dto) {
+    public UsuarioDTO update(String id, UsuarioDTO dto) {
         validarUsuario(dto);
         UsuarioEntity entity = usuarioRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         UsuarioMapper.updateEntity(entity, dto);
-        return UsuarioMapper.toDTO(entity);
+        return UsuarioMapper.toDTO(usuarioRepository.save(entity));
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(String id) {
         if (!usuarioRepository.existsById(id)) {
             throw new EntityNotFoundException("Usuário não encontrado");
         }

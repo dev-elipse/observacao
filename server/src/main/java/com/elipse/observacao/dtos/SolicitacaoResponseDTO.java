@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class SolicitacaoResponseDTO {
-    private Long id;
+    private String id;
     private String endereco;
     private CategoriaSolicitacao categoria;
     private String descricao;
@@ -20,7 +20,7 @@ public class SolicitacaoResponseDTO {
     private StatusSolicitacao status;
     private boolean anonima;
     private String nomeUsuario;
-    private Long usuarioId;
+    private String usuarioId;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 

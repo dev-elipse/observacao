@@ -1,8 +1,8 @@
 package com.elipse.observacao.controllers;
 
 import com.elipse.observacao.dtos.AnexoDTO;
+import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.services.AnexoService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ public class AnexoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AnexoDTO> findById(@PathVariable Long id){
+    public ResponseEntity<AnexoDTO> findById(@PathVariable String id){
         try {
             AnexoDTO response = anexoService.findById(id);
             return ResponseEntity.ok(response);
@@ -44,7 +44,7 @@ public class AnexoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnexoDTO> update(@PathVariable Long id, @RequestBody AnexoDTO dto) {
+    public ResponseEntity<AnexoDTO> update(@PathVariable String id, @RequestBody AnexoDTO dto) {
         try{
             AnexoDTO response = anexoService.update(id, dto);
             return ResponseEntity.ok(response);
@@ -54,7 +54,7 @@ public class AnexoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable String id){
         try {
             anexoService.delete(id);
             return ResponseEntity.noContent().build();

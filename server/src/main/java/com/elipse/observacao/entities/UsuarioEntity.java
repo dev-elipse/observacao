@@ -1,45 +1,49 @@
 package com.elipse.observacao.entities;
 
 import com.elipse.observacao.enums.TipoUsuario;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
-@Table(name = "usuarios")
+import java.util.List;
+import java.util.UUID;
+
+@Document(collection = "usuarios")
 @Getter
 @Setter
 public class UsuarioEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id = UUID.randomUUID().toString();
 
-    @Column(name = "nome", nullable = false)
+    @Field("nome")
     @Size(max = 100)
     private String nome;
 
-    @Column(name = "email", unique = true)
+    @Indexed(unique = true)
+    @Field("email")
     @Size(max = 100)
     private String email;
 
-    @Column(name = "numero_telefone")
+    @Field("numero_telefone")
     @Size(max = 20)
     private String numeroTelefone;
 
-    @Column(name = "cargo")
+    @Field("cargo")
     @Size(max = 200)
     private String cargo;
 
-    @Column(name = "senha")
+    @Field("senha")
     private String senha;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo", nullable = false)
+    @Field("tipo")
     private TipoUsuario tipo;
 
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    @DBRef(lazy = true)
     private List<SolicitacaoEntity> solicitacoes;
 }

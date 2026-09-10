@@ -26,7 +26,7 @@ public class SolicitacaoCreateDTO {
 
     private Boolean anonima = false;
 
-    private Long usuarioId;
+    private String usuarioId;
 
     private String endereco;
 }

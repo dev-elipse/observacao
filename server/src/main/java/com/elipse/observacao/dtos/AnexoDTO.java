@@ -10,12 +10,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AnexoDTO {
-    private Long id;
+    private String id;
 
     @NotBlank(message = "urlArquivo must not be blank")
     private String urlArquivo;
 
-    @NotNull(message = "solicitacaoId must not be null")
-    @Min(value = 1, message = "solicitacaoId must be at least 1")
-    private Long solicitacaoId;
+    @NotBlank(message = "solicitacaoId must not be blank")
+    private String solicitacaoId;
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UsuarioDTO {
-    private Long id;
+    private String id;
 
     @NotBlank(message = "nome must not be blank")
     @Size(max = 100, message = "nome must be at most 100 characters")

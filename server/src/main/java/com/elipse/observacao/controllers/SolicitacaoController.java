@@ -2,8 +2,8 @@ package com.elipse.observacao.controllers;
 
 import com.elipse.observacao.dtos.SolicitacaoCreateDTO;
 import com.elipse.observacao.dtos.SolicitacaoResponseDTO;
+import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.services.SolicitacaoService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class SolicitacaoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SolicitacaoResponseDTO> findById(@PathVariable Long id){
+    public ResponseEntity<SolicitacaoResponseDTO> findById(@PathVariable String id){
         try {
             SolicitacaoResponseDTO response = solicitacaoService.findById(id);
             return ResponseEntity.ok(response);
@@ -48,7 +48,7 @@ public class SolicitacaoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SolicitacaoResponseDTO> update(@PathVariable Long id, @Valid @RequestBody SolicitacaoCreateDTO dto){
+    public ResponseEntity<SolicitacaoResponseDTO> update(@PathVariable String id, @Valid @RequestBody SolicitacaoCreateDTO dto){
         try {
             SolicitacaoResponseDTO response = solicitacaoService.update(id, dto);
             return ResponseEntity.ok(response);
@@ -58,7 +58,7 @@ public class SolicitacaoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable String id){
         try {
             solicitacaoService.delete(id);
             return ResponseEntity.ok().build();

@@ -1,8 +1,8 @@
 package com.elipse.observacao.controllers;
 
 import com.elipse.observacao.dtos.EnderecoDTO;
+import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.services.EnderecoService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ public class EnderecoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EnderecoDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<EnderecoDTO> findById(@PathVariable String id) {
         try {
             EnderecoDTO response = enderecoService.findById(id);
             return ResponseEntity.ok(response);
@@ -44,7 +44,7 @@ public class EnderecoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EnderecoDTO> update(@PathVariable Long id, @Valid @RequestBody EnderecoDTO dto) {
+    public ResponseEntity<EnderecoDTO> update(@PathVariable String id, @Valid @RequestBody EnderecoDTO dto) {
         try {
             EnderecoDTO response = enderecoService.update(id, dto);
             return ResponseEntity.ok(response);
@@ -54,7 +54,7 @@ public class EnderecoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         try {
             enderecoService.delete(id);
             return ResponseEntity.ok().build();

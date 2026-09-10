@@ -1,8 +1,8 @@
 package com.elipse.observacao.controllers;
 
 import com.elipse.observacao.dtos.UsuarioDTO;
+import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.services.UsuarioService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> findById(@PathVariable String id) {
         try {
             UsuarioDTO response = usuarioService.findById(id);
             return ResponseEntity.ok(response);
@@ -48,7 +48,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> update(@PathVariable Long id, @Valid @RequestBody UsuarioDTO dto){
+    public ResponseEntity<UsuarioDTO> update(@PathVariable String id, @Valid @RequestBody UsuarioDTO dto){
         try {
             UsuarioDTO response = usuarioService.update(id, dto);
             return ResponseEntity.ok(response);
@@ -58,7 +58,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         try {
             usuarioService.delete(id);
             return ResponseEntity.noContent().build();

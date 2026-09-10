@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EnderecoDTO {
-       private Long id;
+       private String id;
 
        @NotBlank(message = "logradouro must not be blank")
        @Size(max = 100, message = "logradouro must be at most 100 characters")
@@ -30,6 +30,6 @@ public class EnderecoDTO {
        @Size(max = 20, message = "cep must be at most 100 characters")
        private String cep;
 
-       @NotNull(message = "solicitacaoId must not be null")
-       private Long solicitacaoId;
+       @NotBlank(message = "solicitacaoId must not be blank")
+       private String solicitacaoId;
 }

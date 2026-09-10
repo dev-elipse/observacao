@@ -3,10 +3,10 @@ package com.elipse.observacao.services;
 import com.elipse.observacao.dtos.EnderecoDTO;
 import com.elipse.observacao.entities.EnderecoEntity;
 import com.elipse.observacao.entities.SolicitacaoEntity;
+import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.mappers.EnderecoMapper;
 import com.elipse.observacao.repositories.EnderecoRepository;
 import com.elipse.observacao.repositories.SolicitacaoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ public class EnderecoService {
 
     @Transactional
     public EnderecoDTO create(EnderecoDTO dto){
-        if (enderecoRepository.existsById(dto.getSolicitacaoId())){
+        if (enderecoRepository.existsBySolicitacaoId(dto.getSolicitacaoId())){
             throw new EntityNotFoundException("endereco already exists");
         }
 
@@ -43,23 +43,23 @@ public class EnderecoService {
     }
 
     @Transactional(readOnly = true)
-    public EnderecoDTO findById(Long id){
+    public EnderecoDTO findById(String id){
         return EnderecoMapper.toDTO(enderecoRepository
                 .findById(id).orElseThrow(() -> new EntityNotFoundException("endereco not found")));
     }
 
     @Transactional
-    public EnderecoDTO update(Long id, EnderecoDTO dto){
+    public EnderecoDTO update(String id, EnderecoDTO dto){
         EnderecoEntity entity = enderecoRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("endereco not found"));
 
         EnderecoMapper.updateEntity(entity, dto);
-        return EnderecoMapper.toDTO(entity);
+        return EnderecoMapper.toDTO(enderecoRepository.save(entity));
     }
 
     @Transactional
-    public void delete(Long id){
+    public void delete(String id){
         if (!enderecoRepository.existsById(id)){
             throw new EntityNotFoundException("endereco not found");
         }
