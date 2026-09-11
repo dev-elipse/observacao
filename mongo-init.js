@@ -1,131 +1,63 @@
-db = db.getSiblingDB('observacao');
+db = db.getSiblingDB("observacao");
 
-const usuarios = [
-  {
-    _id: 'usr-01',
-    nome: 'Maria Silva',
-    email: 'maria.silva@email.com',
-    numero_telefone: '(11) 99999-1111',
-    cargo: null,
-    senha: '123456',
-    tipo: 'CIDADAO'
-  },
-  {
-    _id: 'usr-02',
-    nome: 'João Pereira',
-    email: 'joao.pereira@prefeitura.gov.br',
-    numero_telefone: null,
-    cargo: 'Analista de Obras',
-    senha: 'admin123',
-    tipo: 'FUNCIONARIO_PUBLICO'
-  },
-  {
-    _id: 'usr-03',
-    nome: 'Ana Costa',
-    email: 'ana.costa@prefeitura.gov.br',
-    numero_telefone: null,
-    cargo: 'Gestora de Serviços Urbanos',
-    senha: 'gestor123',
-    tipo: 'GESTOR'
-  }
+db.createCollection("ocorrencias", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["titulo", "descricao", "categoria", "endereco", "prioridade", "status"],
+            properties: {
+                titulo: { bsonType: "string", minLength: 1 },
+                descricao: { bsonType: "string", minLength: 1 },
+                categoria: {
+                    enum: ["INFRAESTRUTURA", "ILUMINACAO", "LIMPEZA", "SINALIZACAO", "CALCADA", "ARBORIZACAO", "OUTROS"]
+                },
+                endereco: {
+                    bsonType: "object",
+                    required: ["rua", "numero", "bairro"],
+                    properties: {
+                        rua: { bsonType: "string", minLength: 1 },
+                        numero: { bsonType: "string", minLength: 1 },
+                        bairro: { bsonType: "string", minLength: 1 }
+                    }
+                },
+                prioridade: { enum: ["BAIXA", "MEDIA", "ALTA"] },
+                status: { enum: ["ABERTA", "EM_ANALISE", "EM_ATENDIMENTO", "RESOLVIDA"] }
+            }
+        }
+    },
+    validationLevel: "strict",
+    validationAction: "error"
+});
+
+const ocorrencias = [
+    {
+        titulo: "Buraco na Rua das Flores",
+        descricao: "Buraco grande próximo ao número 120, risco para veículos.",
+        categoria: "INFRAESTRUTURA",
+        endereco: { rua: "Rua das Flores", numero: "120", bairro: "Centro" },
+        prioridade: "ALTA",
+        status: "ABERTA"
+    },
+    {
+        titulo: "Lâmpada queimada na praça",
+        descricao: "Poste de iluminação apagado há uma semana.",
+        categoria: "ILUMINACAO",
+        endereco: { rua: "Avenida Central", numero: "45", bairro: "Jardim América" },
+        prioridade: "MEDIA",
+        status: "EM_ANALISE"
+    },
+    {
+        titulo: "Lixo acumulado na calçada",
+        descricao: "Entulho não recolhido há dias.",
+        categoria: "LIMPEZA",
+        endereco: { rua: "Rua dos Ipês", numero: "78", bairro: "Vila Nova" },
+        prioridade: "BAIXA",
+        status: "RESOLVIDA"
+    }
 ];
 
-if (db.usuarios.countDocuments() === 0) {
-  db.usuarios.insertMany(usuarios);
+if (db.ocorrencias.countDocuments() === 0) {
+  db.ocorrencias.insertMany(ocorrencias);
 }
 
-const solicitacoes = [
-  {
-    _id: 'sol-01',
-    categoria: 'INFRAESTRUTURA_URBANA',
-    descricao: 'Buraco na rua principal em frente à escola municipal, com risco de acidentes para pedestres e veículos.',
-    prioridade: 'ALTA',
-    status: 'ABERTO',
-    anonima: false,
-    endereco: 'Rua das Flores, 45 - Centro',
-    usuario: { $ref: 'usuarios', $id: 'usr-01' },
-    created_at: new Date('2026-09-01T09:15:00-03:00'),
-    updated_at: new Date('2026-09-01T09:15:00-03:00')
-  },
-  {
-    _id: 'sol-02',
-    categoria: 'LIMPEZA_URBANA',
-    descricao: 'Acumulado de resíduos na praça central após coleta irregular e odor forte no entorno.',
-    prioridade: 'MEDIA',
-    status: 'TRIAGEM',
-    anonima: true,
-    endereco: 'Praça da Bandeira, s/n - Bairro Novo',
-    usuario: null,
-    created_at: new Date('2026-09-03T15:40:00-03:00'),
-    updated_at: new Date('2026-09-03T16:10:00-03:00')
-  },
-  {
-    _id: 'sol-03',
-    categoria: 'ILUMINACAO_PUBLICA',
-    descricao: 'Poste de iluminação apagado há três noites no trecho da avenida principal.',
-    prioridade: 'URGENTE',
-    status: 'EM_EXECUCAO',
-    anonima: false,
-    endereco: 'Avenida Brasil, 320 - Vila Operária',
-    usuario: { $ref: 'usuarios', $id: 'usr-02' },
-    created_at: new Date('2026-09-05T08:00:00-03:00'),
-    updated_at: new Date('2026-09-06T11:20:00-03:00')
-  }
-];
-
-if (db.solicitacoes.countDocuments() === 0) {
-  db.solicitacoes.insertMany(solicitacoes);
-}
-
-const enderecos = [
-  {
-    _id: 'end-01',
-    logradouro: 'Rua das Flores',
-    ponto_referencia: 'Em frente à escola municipal',
-    bairro: 'Centro',
-    cidade: 'São Paulo',
-    cep: '01000-000',
-    solicitacao: { $ref: 'solicitacoes', $id: 'sol-01' }
-  },
-  {
-    _id: 'end-02',
-    logradouro: 'Praça da Bandeira',
-    ponto_referencia: 'Ao lado do mercado municipal',
-    bairro: 'Bairro Novo',
-    cidade: 'São Paulo',
-    cep: '01010-010',
-    solicitacao: { $ref: 'solicitacoes', $id: 'sol-02' }
-  },
-  {
-    _id: 'end-03',
-    logradouro: 'Avenida Brasil',
-    ponto_referencia: 'Próximo ao posto de saúde',
-    bairro: 'Vila Operária',
-    cidade: 'São Paulo',
-    cep: '01020-030',
-    solicitacao: { $ref: 'solicitacoes', $id: 'sol-03' }
-  }
-];
-
-if (db.enderecos.countDocuments() === 0) {
-  db.enderecos.insertMany(enderecos);
-}
-
-const anexos = [
-  {
-    _id: 'anx-01',
-    url_arquivo: 'https://example.com/uploads/sol-01/foto-1.jpg',
-    solicitacao: { $ref: 'solicitacoes', $id: 'sol-01' }
-  },
-  {
-    _id: 'anx-02',
-    url_arquivo: 'https://example.com/uploads/sol-02/foto-2.jpg',
-    solicitacao: { $ref: 'solicitacoes', $id: 'sol-02' }
-  }
-];
-
-if (db.anexos.countDocuments() === 0) {
-  db.anexos.insertMany(anexos);
-}
-
-print('Mongo seed executed successfully');
+print("Mongo seed executed successfully.");

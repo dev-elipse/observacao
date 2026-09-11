@@ -1,7 +1,5 @@
 import { useState } from "react";
 import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/auth/LoginPage";
-import SignupPage from "./pages/auth/SignupPage";
 import Dashboard from "./pages/Dashboard";
 import GestorPage from "./pages/GestorPage";
 import FuncionarioPage from "./pages/FuncionarioPage";
@@ -9,42 +7,33 @@ import type { Screen } from "./types";
 
 function App() {
   const [screen, setScreen] = useState<Screen>("landing");
-
-  if (screen === "login") {
-    return (
-      <LoginPage
-        onLoginSuccess={(destino) => setScreen(destino)}
-        onBack={() => setScreen("landing")}
-        onSignup={() => setScreen("signup")}
-      />
-    );
-  }
-
-  if (screen === "signup") {
-    return (
-      <SignupPage
-        onSignupSuccess={() => setScreen("login")}
-        onBack={() => setScreen("landing")}
-      />
-    );
-  }
+  const [protocoloInicial, setProtocoloInicial] = useState<string | undefined>(undefined);
 
   if (screen === "gestor") {
-    return <GestorPage onLogout={() => setScreen("landing")} />;
+    return <GestorPage onBack={() => setScreen("landing")} />;
   }
 
-  if (screen === "funcionario") {
-    return <FuncionarioPage onLogout={() => setScreen("landing")} />;
+  if (screen === "atendente") {
+    return <FuncionarioPage onBack={() => setScreen("landing")} />;
   }
 
-  if (screen === "dashboard") {
-    return <Dashboard onLogout={() => setScreen("landing")} />;
+  if (screen === "cidadao") {
+    return (
+      <Dashboard
+        onBack={() => setScreen("landing")}
+        protocoloInicial={protocoloInicial}
+      />
+    );
   }
 
   return (
     <LandingPage
-      onLogin={() => setScreen("login")}
-      onSignup={() => setScreen("signup")}
+      onCidadao={(protocolo) => {
+        setProtocoloInicial(protocolo);
+        setScreen("cidadao");
+      }}
+      onAtendente={() => setScreen("atendente")}
+      onGestor={() => setScreen("gestor")}
     />
   );
 }

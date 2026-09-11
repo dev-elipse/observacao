@@ -1,220 +1,208 @@
 <div align="center">
-  
+
   <h2><strong>ObservAção</strong></h2>
-  <p><strong>Sistema de gestão de solicitações cidadãs</strong></p>
+  <p><strong>Sistema de gestão de ocorrências urbanas — PoC (1ª Entrega, AEP Engenharia de Software 2026.2)</strong></p>
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/dev-elipse/observacao?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/dev-elipse/observacao?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/dev-elipse/observacao?style=for-the-badge)
+
 </div>
 
 ---
 
-## 🎯 Por quê?
+## 🎯 Problema
 
-Em muitos municípios brasileiros, ainda não existem canais eficientes, acessíveis e transparentes para que cidadãos registrem demandas públicas e acompanhem sua resolução.  
-Isso gera:
+Em muitos municípios brasileiros, ainda não existem canais eficientes, acessíveis e transparentes para que cidadãos relatem problemas urbanos (buracos, iluminação apagada, lixo acumulado, sinalização danificada etc.) e acompanhem sua resolução. Isso gera falta de transparência, dificuldade de acompanhamento e baixa eficiência no atendimento público.
 
-- Falta de transparência
-- Dificuldade de acompanhamento
-- Baixa eficiência no atendimento
-- Desigualdade no acesso a serviços públicos  
+O **ObservAção** é uma PoC (Proof of Concept) GovTech que conecta cidadãos e poder público através do registro público de ocorrências urbanas, com acompanhamento por protocolo.
 
-O **ObservaAção** surge como uma solução GovTech para **conectar cidadãos e poder público**, por meio de um sistema estruturado de solicitações.
+## 🌍 ODS (Objetivos de Desenvolvimento Sustentável — ONU)
 
-> Promovendo transparência, rastreabilidade e eficiência na gestão pública.
+O projeto está alinhado principalmente ao:
+
+- **ODS 11 — Cidades e Comunidades Sustentáveis**: contribui para a melhoria da gestão urbana e da qualidade de vida.
+- **ODS 16 — Paz, Justiça e Instituições Eficazes**: promove transparência e rastreabilidade no atendimento público.
+- **ODS 10 — Redução das Desigualdades**: garante acesso público e igualitário ao canal de registro, sem necessidade de cadastro.
+
+---
+
+## ⚠️ Escopo desta entrega
+
+Este repositório está **intencionalmente simplificado** para atender apenas aos requisitos da **1ª Entrega** da AEP:
+
+- ✅ Coleção NoSQL **única** (`ocorrencias`), com objetos homogêneos e estrutura simples.
+- ✅ Operações básicas de **CRUD** completo.
+- ✅ Sem autenticação — todas as telas são públicas.
+- ❌ Múltiplas coleções relacionadas, documentos aninhados/listas de subdocumentos e demais evoluções da 2ª Entrega **ainda não foram implementadas** — ficam para a próxima etapa.
 
 ---
 
-## ✨ Funcionalidades
+## ✨ Funcionalidades (1ª Entrega)
 
-- Cadastro de solicitações com categoria, descrição e localização
-- Consulta por protocolo
-- Acompanhamento completo com histórico e status
-- Controle de SLA por prioridade
-- Painel de atendentes com filtros e gestão de demandas
-- Dashboard gerencial com indicadores
-- Suporte a solicitações anônimas
-- Histórico imutável com auditoria
-
----
+- Registro público de ocorrências (categoria, título, descrição, endereço e prioridade)
+- Consulta pública por protocolo (ID) ou por título
+- Painel do Atendente: listagem, filtros e atualização de status
+- Painel do Gestor: dashboard com indicadores (por status, prioridade e categoria) e CRUD completo (criar, editar, excluir)
+- Todas as telas acessíveis sem login
 
 ## 🔎 Como Funciona
 
-1. O cidadão registra uma solicitação (identificada ou anônima).
-2. O sistema gera um protocolo único.
-3. A solicitação entra na fila de atendimento.
-4. Um atendente analisa e atualiza o status:
- - Aberto → Em Triagem → Em Execução → Resolvido → Encerrado
-5. Todas as movimentações são registradas com comentários obrigatórios.
-6. O cidadão acompanha tudo via protocolo.
+1. O cidadão registra uma ocorrência (sem necessidade de cadastro).
+2. O sistema gera um protocolo único (`id` do documento).
+3. Um atendente acompanha a fila e atualiza o status: `ABERTA` → `EM_ANALISE` → `EM_ATENDIMENTO` → `RESOLVIDA`.
+4. O gestor acompanha indicadores agregados e pode editar/excluir qualquer ocorrência.
+5. O cidadão acompanha tudo publicamente via protocolo.
 
 ---
 
 ## 🏗️ Arquitetura
 
-**Beta (CLI)**
-- Java puro (POO)
-
 **Frontend**
-- React (Vite)
+
+- React (Vite) + TypeScript
 - TailwindCSS
 
 **Backend**
-- Java
-- Spring Boot
+
+- Java 17 + Spring Boot 3
+- Spring Data MongoDB
 
 **Banco de Dados**
-- MongoDB (produção)
-- H2 (testes)
+
+- MongoDB — coleção única `ocorrencias`, com `$jsonSchema` de validação (`mongo-init.js`)
+
+**Testes**
+
+- JUnit 5 + MockMvc
+- JaCoCo (relatório e verificação automática de cobertura ≥ 70%)
+
+> A pasta `beta/` contém um protótipo standalone em Java puro (POO, sem framework) usado como exploração inicial do domínio. Não faz parte da PoC avaliada nesta entrega.
 
 ---
 
-## 🧩 Módulos do Sistema
+## 🧩 Estrutura da coleção `ocorrencias`
 
-| Módulo | Rotas | Descrição |
-O sistema é dividido em três módulos principais, baseados nos perfis de usuário:
+```json
+{
+  "titulo": "Buraco na Rua das Flores",
+  "descricao": "Buraco grande próximo ao número 120, risco para veículos.",
+  "categoria": "INFRAESTRUTURA",
+  "endereco": { "rua": "Rua das Flores", "numero": "120", "bairro": "Centro" },
+  "prioridade": "ALTA",
+  "status": "ABERTA"
+}
+```
 
-### 👤 Cidadão (Acesso Público)
+- `categoria`: `INFRAESTRUTURA` · `ILUMINACAO` · `LIMPEZA` · `SINALIZACAO` · `CALCADA` · `ARBORIZACAO` · `OUTROS`
+- `prioridade`: `BAIXA` · `MEDIA` · `ALTA`
+- `status`: `ABERTA` · `EM_ANALISE` · `EM_ATENDIMENTO` · `RESOLVIDA`
 
-Responsável pelo registro e acompanhamento de solicitações.
+O schema é validado diretamente pelo MongoDB (`validationLevel: strict`) através do `mongo-init.js`.
 
-**Funcionalidades:**
-- Cadastro de solicitações
-- Consulta por protocolo
-- Visualização de status e histórico
-- Envio opcional de anexos
-- Registro anônimo ou identificado
+## 🧩 Telas do sistema (SPA — sem rotas de navegador, troca de tela por estado)
 
-**Rotas principais:**
-- `GET /`
-- `GET /solicitar`
-- `POST /solicitar`
-- `GET /acompanhar`
-- `GET /acompanhar/{protocolo}`
-- `GET /categorias`
+Todas as telas são **públicas** (sem autenticação):
 
----
+- **Cidadão** — registrar e consultar ocorrências
+- **Atendente** — listar, filtrar e atualizar status
+- **Gestor** — dashboard de indicadores + CRUD completo
 
-### 🧑‍💼 Atendente (Servidor Público)
+## 🔌 API REST
 
-Responsável pelo tratamento das demandas registradas.
-
-**Funcionalidades:**
-- Visualização de solicitações
-- Filtragem por prioridade, categoria e localização
-- Atualização de status
-- Registro de comentários obrigatórios
-- Justificativa de atrasos (SLA)
-
-**Rotas principais:**
-- `GET /painel`
-- `GET /painel/solicitacoes/{id}`
-- `PUT /painel/solicitacoes/{id}/status`
-- `POST /painel/solicitacoes/{id}/comentario`
-
----
-
-### 🧑‍💻 Gestor (Administrativo)
-
-Responsável pela supervisão e gestão do sistema.
-
-**Funcionalidades:**
-- Dashboard com indicadores (SLA, status, categorias)
-- Reatribuição de solicitações
-- Alteração de prioridade
-- Gestão de usuários
-- Gestão de categorias
-- Auditoria de ações
-
-**Rotas principais:**
-- `GET /gestor/dashboard`
-- `PUT /gestor/solicitacoes/{id}/prioridade`
-- `PUT /gestor/solicitacoes/{id}/reatribuir`
-- `GET /gestor/usuarios`
-- `POST /gestor/usuarios`
-- `GET /gestor/logs`
-
----
-
-### 🔐 Autenticação
-
-**Rotas:**
-- `POST /auth/login`
-- `POST /auth/logout`
-- `POST /auth/senha/recuperar`
-- `POST /auth/senha/redefinir`
-
----
+| Método   | Rota                    | Descrição                    |
+| -------- | ----------------------- | ---------------------------- |
+| `POST`   | `/api/ocorrencias`      | Cria uma ocorrência          |
+| `GET`    | `/api/ocorrencias`      | Lista todas as ocorrências   |
+| `GET`    | `/api/ocorrencias/{id}` | Busca uma ocorrência pelo id |
+| `PUT`    | `/api/ocorrencias/{id}` | Atualiza uma ocorrência      |
+| `DELETE` | `/api/ocorrencias/{id}` | Remove uma ocorrência        |
 
 ---
 
 ## 🚀 Instalando o ObservAção
 
-Para instalar o `ObservAção`, siga os seguintes passos:
-
-### 1️⃣ Clone o repositório
+### Opção 1 — Docker Compose (recomendado)
 
 ```bash
 git clone https://github.com/dev-elipse/observacao
 cd observacao
+docker compose up --build
 ```
 
-### 2️⃣ Backend Setup
+- MongoDB: `localhost:27017` (seed automático via `mongo-init.js`)
+- Backend: `http://localhost:8080`
+- Frontend: `http://localhost:5173`
+
+### Opção 2 — Manual
+
+**Backend**
 
 ```bash
 cd server
 ./mvnw spring-boot:run
 ```
-Backend will run at:
-```bash
-http://localhost:8080
-```
 
-### 3️⃣ Frontend Setup
+Backend em `http://localhost:8080`. Requer um MongoDB local em `mongodb://localhost:27017/observacao` (rode `mongosh observacao mongo-init.js` a partir da raiz do projeto para aplicar o schema e o seed).
 
-Open a new terminal
+**Frontend** (em outro terminal)
+
 ```bash
 cd client
 npm install
 npm run dev
 ```
-Frontend will run at:
-```bash
-http://localhost:5173
-```
+
+Frontend em `http://localhost:5173`.
 
 ---
 
-## 🧪 Testes
-- Testes unitários (JUnit + Mockito)
-- Testes de integração
-- Cobertura mínima: 70%
+## 🧪 Testes e Cobertura
+
+- Testes unitários com JUnit 5 para o mapper e o service
+- Testes de integração da camada web (MockMvc) para o controller
+- Cobertura mínima obrigatória: **70%**, verificada automaticamente pelo JaCoCo
 
 ```bash
-./mvnw test
+cd server
+./mvnw clean verify
 ```
+
+O comando falha caso a cobertura fique abaixo de 70%. O relatório em HTML fica disponível em:
+
+```
+server/target/site/jacoco/index.html
+```
+
 ---
 
 ## 🤝 Contribuição
+
 Contribuições são bem-vindas!
 
 1. Fork esse repositório.
 2. Crie uma branch:
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
+
 3. Commit suas alterações:
+
 ```bash
 git commit -m "feat: add your feature"
 ```
+
 4. Faça um Push para a sua branch:
+
 ```bash
 git push origin feature/your-feature-name
 ```
+
 5. Abra um pull request.
 
 Alternativamente, consulte a documentação do GitHub em: [how to create a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
 ## 📄 Licença
+
 Este projeto é open-source e está disponível sob a licença MIT.

@@ -1,21 +1,27 @@
-export type Screen = "landing" | "login" | "signup" | "dashboard" | "gestor" | "funcionario";
+export type Screen = "landing" | "cidadao" | "atendente" | "gestor";
 
-export type RequestStatus = "ABERTO" | "EM EXECUÇÃO" | "CONCLUÍDO";
+export type CategoriaOcorrencia =
+  | "INFRAESTRUTURA"
+  | "ILUMINACAO"
+  | "LIMPEZA"
+  | "SINALIZACAO"
+  | "CALCADA"
+  | "ARBORIZACAO"
+  | "OUTROS";
+
+export type PrioridadeOcorrencia = "BAIXA" | "MEDIA" | "ALTA";
+
+export type StatusOcorrencia =
+  | "ABERTA"
+  | "EM_ANALISE"
+  | "EM_ATENDIMENTO"
+  | "RESOLVIDA";
 
 export type StatusVariant = "blue" | "orange" | "green";
 
-export interface ServiceRequest {
-  id: string;
-  type: string;
-  icon: string;
-  addr: string;
-  date: string;
-  status: RequestStatus;
-  variant: StatusVariant;
-}
-
 export interface Category {
   id: string;
+  categoria: CategoriaOcorrencia;
   label: string;
   icon: string;
   iconColor: string;
@@ -27,13 +33,6 @@ export interface Step {
   icon: string;
   title: string;
   desc: string;
-}
-
-export interface ActivityEvent {
-  msg: string;
-  time: string;
-  icon: string;
-  iconColor: string;
 }
 
 export type FilterType = "todas" | "abertas" | "concluidas";

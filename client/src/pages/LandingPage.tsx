@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import { CATEGORIES, STEPS } from "../constants";
 
 interface LandingPageProps {
-  onLogin: () => void;
-  onSignup?: () => void;
+  onCidadao: (protocolo?: string) => void;
+  onAtendente: () => void;
+  onGestor: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
+const LandingPage: React.FC<LandingPageProps> = ({
+  onCidadao,
+  onAtendente,
+  onGestor,
+}) => {
   const [protocol, setProtocol] = useState("");
 
   return (
@@ -24,16 +29,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
 
         <div className="flex gap-2.5">
           <button
-            onClick={onLogin}
+            onClick={onAtendente}
             className="border border-slate-200 rounded-lg px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 transition-colors"
           >
-            Entrar
+            Painel do Atendente
           </button>
           <button
-            onClick={onSignup || onLogin}
+            onClick={onGestor}
             className="bg-[#0F2A4A] text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#1A3D6B] transition-colors"
           >
-            Registrar
+            Painel do Gestor
           </button>
         </div>
       </nav>
@@ -53,9 +58,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
           </h1>
 
           <p className="text-lg text-slate-500 leading-relaxed mb-9 max-w-[480px]">
-            O ObservAção conecta você ao poder público. Registre demandas do seu
-            bairro, acompanhe a resolução em tempo real e ajude a construir uma
-            cidade melhor para todos.
+            O ObservAção conecta você ao poder público. Registre ocorrências do
+            seu bairro, acompanhe a resolução em tempo real e ajude a
+            construir uma cidade melhor para todos — sem necessidade de
+            cadastro.
           </p>
         </div>
 
@@ -65,13 +71,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
             <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center mb-4">
               <i className="ti ti-plus text-white text-xl" aria-hidden="true" />
             </div>
-            <h3 className="text-lg font-bold mb-2">Nova Solicitação</h3>
+            <h3 className="text-lg font-bold mb-2">Nova Ocorrência</h3>
             <p className="text-sm text-white/70 leading-relaxed mb-5">
-              Relate um problema estrutural, de manutenção ou serviço na sua
-              rua. De forma identificada ou anônima.
+              Relate um problema estrutural, de limpeza ou de sinalização na
+              sua rua. O registro é público e imediato.
             </p>
             <button
-              onClick={onLogin}
+              onClick={() => onCidadao()}
               className="bg-white/15 border border-white/25 text-white rounded-lg px-4 py-2.5 text-sm font-semibold flex items-center gap-1.5 hover:bg-white/25 transition-colors"
             >
               Iniciar registro{" "}
@@ -89,10 +95,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
               </div>
               <div>
                 <div className="text-sm font-bold text-[#0F2A4A]">
-                  Acompanhar Solicitação
+                  Acompanhar Ocorrência
                 </div>
                 <div className="text-xs text-slate-400">
-                  Digite o número do protocolo
+                  Digite o número do protocolo (ID)
                 </div>
               </div>
             </div>
@@ -100,10 +106,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
               <input
                 value={protocol}
                 onChange={(e) => setProtocol(e.target.value)}
-                placeholder="Ex: PRF-2023-10-00123"
+                placeholder="Ex: 66f1a2c3d4e5f6a7b8c9d0e1"
                 className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 transition-colors"
               />
-              <button className="bg-[#2E7BD4] text-white rounded-lg px-4 text-sm font-bold hover:bg-blue-600 transition-colors">
+              <button
+                onClick={() => onCidadao(protocol.trim() || undefined)}
+                className="bg-[#2E7BD4] text-white rounded-lg px-4 text-sm font-bold hover:bg-blue-600 transition-colors"
+              >
                 Buscar
               </button>
             </div>
