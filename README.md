@@ -1,220 +1,128 @@
 <div align="center">
-  
-  <h2><strong>ObservAção</strong></h2>
-  <p><strong>Sistema de gestão de solicitações cidadãs</strong></p>
 
-![GitHub repo size](https://img.shields.io/github/repo-size/dev-elipse/observacao?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/dev-elipse/observacao?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/dev-elipse/observacao?style=for-the-badge)
+  <h2><strong>ObservAção</strong></h2>
+  <p><strong>Sistema para registro e acompanhamento de ocorrências urbanas</strong></p>
+
 </div>
 
 ---
 
-## 🎯 Por quê?
+## 🎯 Problema
 
-Em muitos municípios brasileiros, ainda não existem canais eficientes, acessíveis e transparentes para que cidadãos registrem demandas públicas e acompanhem sua resolução.  
-Isso gera:
+Nem sempre é fácil para o cidadão comunicar um problema encontrado na cidade e saber o que acontece depois que ele é informado. Muitas vezes, porém, o cidadão não sabe onde registrar essas situações ou como acompanhar o andamento da solicitação. A falta de um processo simples para registrar e acompanhar essas ocorrências dificulta a organização e a resolução das demandas.
 
-- Falta de transparência
-- Dificuldade de acompanhamento
-- Baixa eficiência no atendimento
-- Desigualdade no acesso a serviços públicos  
+## 🌍 ODS
 
-O **ObservaAção** surge como uma solução GovTech para **conectar cidadãos e poder público**, por meio de um sistema estruturado de solicitações.
-
-> Promovendo transparência, rastreabilidade e eficiência na gestão pública.
+O projeto está relacionado ao **ODS 11 — Cidades e Comunidades Sustentáveis**, por tratar da organização e acompanhamento de demandas relacionadas aos espaços urbanos.
 
 ---
 
 ## ✨ Funcionalidades
 
-- Cadastro de solicitações com categoria, descrição e localização
-- Consulta por protocolo
-- Acompanhamento completo com histórico e status
-- Controle de SLA por prioridade
-- Painel de atendentes com filtros e gestão de demandas
-- Dashboard gerencial com indicadores
-- Suporte a solicitações anônimas
-- Histórico imutável com auditoria
+- Cadastro de ocorrências urbanas
+- Classificação por categoria e prioridade
+- Registro do endereço da ocorrência
+- Acompanhamento do status
+- Organização das ocorrências para análise e atendimento
+
+## 🧩 Estrutura dos dados
+
+Cada ocorrência possui informações como:
+
+- Título
+- Descrição
+- Categoria
+- Endereço
+- Prioridade
+- Status
+
+As categorias disponíveis são:`INFRAESTRUTURA`, `ILUMINACAO`, `LIMPEZA`, `SINALIZACAO`, `CALCADA`, `ARBORIZACAO` e `OUTROS`. 
+
+As prioridades são:`BAIXA`, `MEDIA` e `ALTA`.
+
+## 🔁 Fluxo da ocorrência
+
+`ABERTA → EM_ANALISE → EM_ATENDIMENTO → RESOLVIDA`
+
+## 🔎 Como funciona
+
+O cidadão registra uma ocorrência informando título, descrição, categoria, endereço (rua, número e bairro) e prioridade. O sistema cria a ocorrência automaticamente com o status `ABERTA` e gera um identificador único (`id`), que funciona como protocolo de acompanhamento.
+
+A partir daí, a ocorrência é conduzida pelo fluxo de status `ABERTA → EM_ANALISE → EM_ATENDIMENTO → RESOLVIDA`. A mudança de status é feita através da atualização dos dados da ocorrência (mesma operação usada para editar título, descrição, categoria, endereço ou prioridade) — não existe uma rota separada só para status, a alteração é enviada junto com o restante dos dados da ocorrência.
+
+Além do fluxo de acompanhamento, a aplicação permite realizar as operações básicas de um CRUD sobre as ocorrências: inserir novos registros, consultar, atualizar e excluir ocorrências diretamente no banco de dados. Qualquer ocorrência pode ser consultada individualmente pelo seu identificador, listada junto com todas as demais, atualizada ou removida.
 
 ---
 
-## 🔎 Como Funciona
-
-1. O cidadão registra uma solicitação (identificada ou anônima).
-2. O sistema gera um protocolo único.
-3. A solicitação entra na fila de atendimento.
-4. Um atendente analisa e atualiza o status:
- - Aberto → Em Triagem → Em Execução → Resolvido → Encerrado
-5. Todas as movimentações são registradas com comentários obrigatórios.
-6. O cidadão acompanha tudo via protocolo.
-
----
-
-## 🏗️ Arquitetura
-
-**Beta (CLI)**
-- Java puro (POO)
-
-**Frontend**
-- React (Vite)
-- TailwindCSS
+## 🏗️ Tecnologias
 
 **Backend**
-- Java
-- Spring Boot
 
-**Banco de Dados**
-- PostgreSQL (produção)
-- H2 (testes)
+- Java 17 + Spring Boot 3
+- Spring Data MongoDB
 
----
+**Banco de dados**
 
-## 🧩 Módulos do Sistema
+- MongoDB — coleção `ocorrencias`, validada por um `$jsonSchema` (`mongo-init.js`)
 
-| Módulo | Rotas | Descrição |
-O sistema é dividido em três módulos principais, baseados nos perfis de usuário:
+**Frontend**
 
-### 👤 Cidadão (Acesso Público)
+- React (Vite) + TypeScript
+- Tailwind CSS
 
-Responsável pelo registro e acompanhamento de solicitações.
+**Containerização**
 
-**Funcionalidades:**
-- Cadastro de solicitações
-- Consulta por protocolo
-- Visualização de status e histórico
-- Envio opcional de anexos
-- Registro anônimo ou identificado
-
-**Rotas principais:**
-- `GET /`
-- `GET /solicitar`
-- `POST /solicitar`
-- `GET /acompanhar`
-- `GET /acompanhar/{protocolo}`
-- `GET /categorias`
+- Docker e Docker Compose (MongoDB, backend e frontend, cada um em seu próprio container)
 
 ---
 
-### 🧑‍💼 Atendente (Servidor Público)
+## 🚀 Como executar
 
-Responsável pelo tratamento das demandas registradas.
+### Opção 1 — Com Docker (recomendado)
 
-**Funcionalidades:**
-- Visualização de solicitações
-- Filtragem por prioridade, categoria e localização
-- Atualização de status
-- Registro de comentários obrigatórios
-- Justificativa de atrasos (SLA)
-
-**Rotas principais:**
-- `GET /painel`
-- `GET /painel/solicitacoes/{id}`
-- `PUT /painel/solicitacoes/{id}/status`
-- `POST /painel/solicitacoes/{id}/comentario`
-
----
-
-### 🧑‍💻 Gestor (Administrativo)
-
-Responsável pela supervisão e gestão do sistema.
-
-**Funcionalidades:**
-- Dashboard com indicadores (SLA, status, categorias)
-- Reatribuição de solicitações
-- Alteração de prioridade
-- Gestão de usuários
-- Gestão de categorias
-- Auditoria de ações
-
-**Rotas principais:**
-- `GET /gestor/dashboard`
-- `PUT /gestor/solicitacoes/{id}/prioridade`
-- `PUT /gestor/solicitacoes/{id}/reatribuir`
-- `GET /gestor/usuarios`
-- `POST /gestor/usuarios`
-- `GET /gestor/logs`
-
----
-
-### 🔐 Autenticação
-
-**Rotas:**
-- `POST /auth/login`
-- `POST /auth/logout`
-- `POST /auth/senha/recuperar`
-- `POST /auth/senha/redefinir`
-
----
-
----
-
-## 🚀 Instalando o ObservAção
-
-Para instalar o `ObservAção`, siga os seguintes passos:
-
-### 1️⃣ Clone o repositório
+Pré-requisito: ter o Docker instalado e em execução.
 
 ```bash
-git clone https://github.com/dev-elipse/observacao
+git clone <url-do-repositorio>
 cd observacao
+docker compose up --build
 ```
 
-### 2️⃣ Backend Setup
+Isso sobe os três serviços de uma vez, já conectados entre si:
+
+- MongoDB: `localhost:27017` (banco e coleção criados automaticamente via `mongo-init.js`)
+- Backend: `http://localhost:8080`
+- Frontend: `http://localhost:5173`
+
+Para parar: `docker compose down`. Os dados do banco ficam guardados em um volume Docker e persistem entre reinicializações.
+
+### Opção 2 — Sem Docker (manual)
+
+Pré-requisitos: Java 17, Node.js 18+ e um MongoDB rodando localmente na porta 27017 (o Maven já vem embutido no projeto, através do `mvnw`).
+
+**1. Banco de dados**
+
+Com o MongoDB local em execução, aplique o schema e os dados iniciais a partir da raiz do projeto:
+
+```bash
+mongosh observacao mongo-init.js
+```
+
+**2. Backend**
 
 ```bash
 cd server
 ./mvnw spring-boot:run
 ```
-Backend will run at:
-```bash
-http://localhost:8080
-```
 
-### 3️⃣ Frontend Setup
+A API sobe em `http://localhost:8080`, conectando no MongoDB local por padrão.
 
-Open a new terminal
+**3. Frontend** (em outro terminal)
+
 ```bash
 cd client
 npm install
 npm run dev
 ```
-Frontend will run at:
-```bash
-http://localhost:5173
-```
 
----
-
-## 🧪 Testes
-- Testes unitários (JUnit + Mockito)
-- Testes de integração
-- Cobertura mínima: 70%
-
-```bash
-./mvnw test
-```
----
-
-## 🤝 Contribuição
-Contribuições são bem-vindas!
-
-1. Fork esse repositório.
-2. Crie uma branch:
-```bash
-git checkout -b feature/your-feature-name
-```
-3. Commit suas alterações:
-```bash
-git commit -m "feat: add your feature"
-```
-4. Faça um Push para a sua branch:
-```bash
-git push origin feature/your-feature-name
-```
-5. Abra um pull request.
-
-Alternativamente, consulte a documentação do GitHub em: [how to create a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
-
-## 📄 Licença
-Este projeto é open-source e está disponível sob a licença MIT.
+A interface sobe em `http://localhost:5173` e já aponta para `http://localhost:8080` por padrão.
