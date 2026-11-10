@@ -110,4 +110,15 @@ class OcorrenciaMapperTest {
         assertThat(entity.getEndereco().getBairro()).isEqualTo("Bairro Novo");
         assertThat(entity.getStatus()).isEqualTo(StatusOcorrencia.RESOLVIDA);
     }
+    @Test
+    void deveCopiarHistoricoSemPermitirAlterarDocumentoPelaResposta() {
+        var data = java.time.OffsetDateTime.parse("2026-11-10T12:00:00Z");
+        var item = new com.elipse.observacao.entities.HistoricoStatus(StatusOcorrencia.EM_ANALISE, data);
+        var entity = new OcorrenciaEntity();
+        entity.setHistoricoStatus(java.util.List.of(item));
+        var dto = OcorrenciaMapper.toDTO(entity);
+        assertThat(dto.getHistoricoStatus().get(0).getData()).isEqualTo(data);
+        dto.getHistoricoStatus().get(0).setStatus(StatusOcorrencia.RESOLVIDA);
+        assertThat(item.getStatus()).isEqualTo(StatusOcorrencia.EM_ANALISE);
+    }
 }

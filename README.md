@@ -145,6 +145,15 @@ cd server
 
 Backend em `http://localhost:8080`. Requer um MongoDB local em `mongodb://localhost:27017/observacao` (rode `mongosh observacao mongo-init.js` a partir da raiz do projeto para aplicar o schema e o seed).
 
+Para atualizar um volume MongoDB existente, execute novamente `mongo-init.js`; o script aplica os validators com `collMod` e preserva os documentos. O Docker executa os scripts de inicializacao automaticamente apenas em volumes novos:
+
+```bash
+docker compose exec mongodb mongosh --quiet /docker-entrypoint-initdb.d/mongo-init.js
+```
+
+O script cria a colecao `cidadaos`, o indice unico `email` e exemplos com enderecos e ocorrencias vinculadas. `cidadaoId` e `historicoStatus` sao opcionais no schema para aceitar documentos antigos. A existencia do cidadao referenciado e validada pelo backend.
+
+
 **Frontend** (em outro terminal)
 
 ```bash
@@ -159,20 +168,48 @@ Frontend em `http://localhost:5173`.
 
 ## 🧪 Testes e Cobertura
 
-- Testes unitários com JUnit 5 para o mapper e o service
-- Testes de integração da camada web (MockMvc) para o controller
-- Cobertura mínima obrigatória: **70%**, verificada automaticamente pelo JaCoCo
+- JUnit 5 e MockMvc, com stubs de repositorio e sem Mockito.
+- Cidadaos: CRUD, enderecos, validacoes e conflito de e-mail.
+- Ocorrencias: vinculo opcional, cidadao inexistente, historico, documentos antigos e conversao de datas.
+- **Escopo do JaCoCo: codigo Java do backend (`server/src/main/java`).** Frontend, `beta/` e scripts MongoDB nao entram nesse percentual.
+- Minimo de **70% das linhas**, verificado na fase `verify`, sem alterar o limite ou as exclusoes.
+
+Pre-requisitos: JDK 17 ou superior, acesso ao Maven Central na primeira execucao e MongoDB disponivel na URI configurada (o teste de contexto carrega a configuracao real do banco).
 
 ```bash
 cd server
 ./mvnw clean verify
 ```
 
-O comando falha caso a cobertura fique abaixo de 70%. O relatório em HTML fica disponível em:
+No PowerShell do Windows:
 
+```powershell
+cd server
+.\mvnw.cmd clean verify
 ```
-server/target/site/jacoco/index.html
+
+`./mvnw verify` tambem gera o relatorio e verifica o limite; `clean` remove resultados anteriores. O comando falha se houver testes com falha ou cobertura abaixo de 70%.
+
+Relatorio: `server/target/site/jacoco/index.html`. Contadores reproduziveis: `server/target/site/jacoco/jacoco.xml`, elemento `counter` de tipo `LINE` no nivel do relatorio. Resultados dos testes: `server/target/surefire-reports/`.
+
+**Medicao em 10/11/2026:** 42 testes, zero falhas, erros ou testes ignorados; **223 de 227 linhas cobertas (98,24%)**. `clean verify` concluido com `BUILD SUCCESS`, usando Maven 3.9.16 pelo Wrapper, JDK 21 e JaCoCo 0.8.12. Neste ambiente foram informados `MAVEN_USER_HOME` e `-Dmaven.repo.local` para usar o cache local do usuario; nao houve alteracao do escopo da medicao.
+
+### Validacao do MongoDB
+
+Na raiz do projeto, com MongoDB e `mongosh` disponiveis:
+
+```bash
+mongosh --quiet tests/mongo-init.test.js
 ```
+
+Alternativa no PowerShell, usando o container do Compose e uma copia exata do script local:
+
+```powershell
+docker compose cp mongo-init.js mongodb:/tmp/observacao-a4-init.js
+Get-Content -Raw -Encoding UTF8 tests/mongo-init.test.js | docker compose exec -T -e MONGO_INIT_SCRIPT=/tmp/observacao-a4-init.js mongodb mongosh --quiet --file /dev/stdin
+```
+
+Esse teste usa um banco temporario exclusivo e o remove ao terminar. Verifica schemas, subdocumentos, e-mail unico, exemplos relacionados, datas BSON, documentos antigos e reaplicacao sem duplicacao nem perda de dados. Executado com sucesso em 10/11/2026. E uma verificacao separada dos 42 testes Java e da cobertura JaCoCo.
 
 ---
 

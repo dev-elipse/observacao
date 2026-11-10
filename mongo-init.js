@@ -1,6 +1,48 @@
 db = db.getSiblingDB("observacao");
 
-db.createCollection("ocorrencias", {
+// Pode ser reaplicado em volumes existentes sem apagar documentos.
+function aplicarSchema(nome, opcoes) {
+    if (db.getCollectionNames().includes(nome)) {
+        const resultado = db.runCommand({ collMod: nome, ...opcoes });
+        if (!resultado.ok) throw new Error(JSON.stringify(resultado));
+    } else {
+        db.createCollection(nome, opcoes);
+    }
+}
+
+aplicarSchema("cidadaos", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["nome", "email", "enderecos"],
+            properties: {
+                nome: { bsonType: "string", minLength: 1 },
+                email: { bsonType: "string", minLength: 1 },
+                enderecos: {
+                    bsonType: "array",
+                    items: {
+                        bsonType: "object",
+                        required: ["rua", "numero", "bairro", "cidade", "estado"],
+                        properties: {
+                            rua: { bsonType: "string", minLength: 1, maxLength: 150 },
+                            numero: { bsonType: "string", minLength: 1, maxLength: 20 },
+                            bairro: { bsonType: "string", minLength: 1, maxLength: 100 },
+                            cidade: { bsonType: "string", minLength: 1 },
+                            estado: { bsonType: "string", minLength: 2, maxLength: 2 }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    validationLevel: "strict",
+    validationAction: "error"
+});
+
+// Mesmo nome e opcoes do indice criado pelo @Indexed do backend.
+db.cidadaos.createIndex({ email: 1 }, { unique: true, name: "email" });
+
+aplicarSchema("ocorrencias", {
     validator: {
         $jsonSchema: {
             bsonType: "object",
@@ -21,13 +63,40 @@ db.createCollection("ocorrencias", {
                     }
                 },
                 prioridade: { enum: ["BAIXA", "MEDIA", "ALTA"] },
-                status: { enum: ["ABERTA", "EM_ANALISE", "EM_ATENDIMENTO", "RESOLVIDA"] }
+                status: { enum: ["ABERTA", "EM_ANALISE", "EM_ATENDIMENTO", "RESOLVIDA"] },
+                cidadaoId: { bsonType: ["string", "null"] },
+                historicoStatus: {
+                    bsonType: ["array", "null"],
+                    items: {
+                        bsonType: "object",
+                        required: ["status", "data"],
+                        properties: {
+                            status: { enum: ["ABERTA", "EM_ANALISE", "EM_ATENDIMENTO", "RESOLVIDA"] },
+                            data: { bsonType: "date" }
+                        }
+                    }
+                }
             }
         }
     },
     validationLevel: "strict",
     validationAction: "error"
 });
+
+db.cidadaos.updateOne(
+    { email: "ana.exemplo@example.com" },
+    { $setOnInsert: {
+        _id: "aep-cidadao-exemplo",
+        nome: "Ana Exemplo",
+        email: "ana.exemplo@example.com",
+        enderecos: [
+            { rua: "Rua das Flores", numero: "120", bairro: "Centro", cidade: "Maringa", estado: "PR" },
+            { rua: "Avenida Central", numero: "45", bairro: "Jardim America", cidade: "Maringa", estado: "PR" }
+        ]
+    } },
+    { upsert: true }
+);
+const cidadaoExemplo = db.cidadaos.findOne({ email: "ana.exemplo@example.com" });
 
 const ocorrencias = [
     {
@@ -36,7 +105,9 @@ const ocorrencias = [
         categoria: "INFRAESTRUTURA",
         endereco: { rua: "Rua das Flores", numero: "120", bairro: "Centro" },
         prioridade: "ALTA",
-        status: "ABERTA"
+        status: "ABERTA",
+        cidadaoId: cidadaoExemplo._id.toString(),
+        historicoStatus: []
     },
     {
         titulo: "Lâmpada queimada na praça",
@@ -44,7 +115,9 @@ const ocorrencias = [
         categoria: "ILUMINACAO",
         endereco: { rua: "Avenida Central", numero: "45", bairro: "Jardim América" },
         prioridade: "MEDIA",
-        status: "EM_ANALISE"
+        status: "EM_ANALISE",
+        cidadaoId: cidadaoExemplo._id.toString(),
+        historicoStatus: [{ status: "EM_ANALISE", data: ISODate("2026-11-10T12:00:00Z") }]
     },
     {
         titulo: "Lixo acumulado na calçada",
