@@ -35,6 +35,9 @@ public class OcorrenciaMapper {
     public static OcorrenciaEntity toEntity(OcorrenciaCreateDTO dto) {
         OcorrenciaEntity entity = new OcorrenciaEntity();
 
+        if (dto.getCidadaoId() != null) {
+            entity.setCidadaoId(dto.getCidadaoId());
+        }
         entity.setTitulo(dto.getTitulo());
         entity.setDescricao(dto.getDescricao());
         entity.setCategoria(dto.getCategoria());
@@ -51,6 +54,7 @@ public class OcorrenciaMapper {
         OcorrenciaResponseDTO dto = new OcorrenciaResponseDTO();
 
         dto.setId(entity.getId());
+        dto.setCidadaoId(entity.getCidadaoId());
         dto.setTitulo(entity.getTitulo());
         dto.setDescricao(entity.getDescricao());
         dto.setCategoria(entity.getCategoria());
@@ -64,6 +68,9 @@ public class OcorrenciaMapper {
     }
 
     public static void updateEntity(OcorrenciaEntity entity, OcorrenciaCreateDTO dto) {
+        if (dto.getCidadaoId() != null) {
+            entity.setCidadaoId(dto.getCidadaoId());
+        }
         entity.setTitulo(dto.getTitulo());
         entity.setDescricao(dto.getDescricao());
         entity.setCategoria(dto.getCategoria());

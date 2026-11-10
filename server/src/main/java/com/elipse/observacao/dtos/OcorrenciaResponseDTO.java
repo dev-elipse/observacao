@@ -13,6 +13,7 @@ import java.time.OffsetDateTime;
 public class OcorrenciaResponseDTO {
 
     private String id;
+    private String cidadaoId;
     private String titulo;
     private String descricao;
     private CategoriaOcorrencia categoria;

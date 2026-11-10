@@ -170,8 +170,19 @@ class OcorrenciaControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void deveRetornar404AoCriarComCidadaoInexistente() throws Exception {
+        ocorrenciaService.createException = new EntityNotFoundException("cidadao not found");
+        OcorrenciaCreateDTO dto = buildCreateDTO();
+        dto.setCidadaoId("ausente");
+        mockMvc.perform(post("/api/ocorrencias").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
         static class StubOcorrenciaService extends OcorrenciaService {
                 private OcorrenciaResponseDTO createResult;
+                private EntityNotFoundException createException;
                 private List<OcorrenciaResponseDTO> findAllResult = List.of();
                 private OcorrenciaResponseDTO findByIdResult;
                 private EntityNotFoundException findByIdException;
@@ -180,11 +191,12 @@ class OcorrenciaControllerTest {
                 private EntityNotFoundException deleteException;
 
                 StubOcorrenciaService() {
-                        super(null);
+                        super(null, null);
                 }
 
                 void reset() {
                         createResult = null;
+                        createException = null;
                         findAllResult = List.of();
                         findByIdResult = null;
                         findByIdException = null;
@@ -195,6 +207,7 @@ class OcorrenciaControllerTest {
 
                 @Override
                 public OcorrenciaResponseDTO create(OcorrenciaCreateDTO dto) {
+                        if (createException != null) throw createException;
                         return createResult;
                 }
 

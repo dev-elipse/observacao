@@ -16,6 +16,8 @@ public class OcorrenciaCreateDTO {
     @NotBlank(message = "titulo must not be blank")
     private String titulo;
 
+    private String cidadaoId;
+
     @NotBlank(message = "descricao must not be blank")
     private String descricao;
 

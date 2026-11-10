@@ -10,6 +10,7 @@ import com.elipse.observacao.enums.PrioridadeOcorrencia;
 import com.elipse.observacao.enums.StatusOcorrencia;
 import com.elipse.observacao.exceptions.EntityNotFoundException;
 import com.elipse.observacao.repositories.OcorrenciaRepository;
+import com.elipse.observacao.repositories.CidadaoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ class OcorrenciaServiceTest {
 
     private OcorrenciaService ocorrenciaService;
     private RepositoryStub repositoryStub;
+    private boolean cidadaoExiste;
 
     private OcorrenciaCreateDTO createDTO;
     private OcorrenciaEntity entity;
@@ -34,7 +36,14 @@ class OcorrenciaServiceTest {
     void setUp() {
         repositoryStub = new RepositoryStub();
         ocorrenciaRepository = repositoryStub.createProxy();
-        ocorrenciaService = new OcorrenciaService(ocorrenciaRepository);
+        cidadaoExiste = false;
+        CidadaoRepository cidadaos = (CidadaoRepository) Proxy.newProxyInstance(
+                CidadaoRepository.class.getClassLoader(), new Class<?>[]{CidadaoRepository.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("existsById")) return cidadaoExiste;
+                    throw new UnsupportedOperationException(method.getName());
+                });
+        ocorrenciaService = new OcorrenciaService(ocorrenciaRepository, cidadaos);
 
         EnderecoDTO enderecoDTO = new EnderecoDTO();
         enderecoDTO.setRua("Rua das Flores");
@@ -165,6 +174,45 @@ class OcorrenciaServiceTest {
                 .isInstanceOf(EntityNotFoundException.class);
 
         assertThat(repositoryStub.deletedId).isNull();
+    }
+
+    @Test
+    void deveCriarOcorrenciaVinculadaACidadaoExistente() {
+        cidadaoExiste = true;
+        createDTO.setCidadaoId("cid-01");
+        repositoryStub.saveReturnsArgument = true;
+        assertThat(ocorrenciaService.create(createDTO).getCidadaoId()).isEqualTo("cid-01");
+    }
+
+    @Test
+    void deveRejeitarCidadaoInexistenteSemSalvar() {
+        createDTO.setCidadaoId("ausente");
+        assertThatThrownBy(() -> ocorrenciaService.create(createDTO))
+                .isInstanceOf(EntityNotFoundException.class);
+        repositoryStub.findByIdResult = Optional.of(entity);
+        assertThatThrownBy(() -> ocorrenciaService.update("ocr-01", createDTO))
+                .isInstanceOf(EntityNotFoundException.class);
+        assertThat(repositoryStub.saveCalls).isZero();
+        assertThat(entity.getCidadaoId()).isNull();
+    }
+
+    @Test
+    void deveAtualizarVinculoEPreservarQuandoClienteOmiteCampo() {
+        cidadaoExiste = true;
+        createDTO.setCidadaoId("cid-02");
+        entity.setCidadaoId("cid-01");
+        repositoryStub.findByIdResult = Optional.of(entity);
+        repositoryStub.saveReturnsArgument = true;
+        assertThat(ocorrenciaService.update("ocr-01", createDTO).getCidadaoId()).isEqualTo("cid-02");
+        createDTO.setCidadaoId(null);
+        assertThat(ocorrenciaService.update("ocr-01", createDTO).getCidadaoId()).isEqualTo("cid-02");
+    }
+
+    @Test
+    void deveContinuarCriandoSemCidadao() {
+        repositoryStub.saveReturnsArgument = true;
+        assertThat(ocorrenciaService.create(createDTO).getCidadaoId()).isNull();
+        assertThat(repositoryStub.saveCalls).isEqualTo(1);
     }
 
     private static final class RepositoryStub {

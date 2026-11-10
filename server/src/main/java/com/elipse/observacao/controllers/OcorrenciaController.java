@@ -20,6 +20,11 @@ public class OcorrenciaController {
 
     private final OcorrenciaService ocorrenciaService;
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Void> notFound() {
+        return ResponseEntity.notFound().build();
+    }
+
     @PostMapping
     public ResponseEntity<OcorrenciaResponseDTO> create(@Valid @RequestBody OcorrenciaCreateDTO dto) {
         OcorrenciaResponseDTO response = ocorrenciaService.create(dto);

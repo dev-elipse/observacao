@@ -10,14 +10,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import com.elipse.observacao.repositories.CidadaoRepository;
 
 @Service
 @RequiredArgsConstructor
 public class OcorrenciaService {
 
     private final OcorrenciaRepository ocorrenciaRepository;
+    private final CidadaoRepository cidadaoRepository;
+
+    private void validarCidadao(String id) {
+        if (id != null && !cidadaoRepository.existsById(id)) {
+            throw new EntityNotFoundException("cidadao not found");
+        }
+    }
 
     public OcorrenciaResponseDTO create(OcorrenciaCreateDTO dto) {
+        validarCidadao(dto.getCidadaoId());
         OcorrenciaEntity entity = OcorrenciaMapper.toEntity(dto);
         entity.prePersist();
 
@@ -41,6 +50,7 @@ public class OcorrenciaService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ocorrencia not found"));
 
+        validarCidadao(dto.getCidadaoId());
         OcorrenciaMapper.updateEntity(entity, dto);
         entity.preUpdate();
 

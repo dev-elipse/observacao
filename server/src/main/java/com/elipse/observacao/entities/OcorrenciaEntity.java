@@ -12,11 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-/**
- * Única coleção NoSQL da PoC (1ª Entrega): "ocorrencias".
- * Objeto homogêneo e de estrutura simples, compatível com o validator
- * definido em mongo-init.js.
- */
+/** Documento de ocorrencia com referencia opcional a cidadao. */
 @Document(collection = "ocorrencias")
 @Getter
 @Setter
@@ -48,6 +44,8 @@ public class OcorrenciaEntity {
 
     @Field("updated_at")
     private OffsetDateTime updatedAt;
+
+    private String cidadaoId;
 
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();
