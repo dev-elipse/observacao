@@ -1,7 +1,7 @@
 <div align="center">
 
   <h2><strong>ObservAção</strong></h2>
-  <p><strong>Sistema de gestão de ocorrências urbanas — PoC (1ª Entrega, AEP Engenharia de Software 2026.2)</strong></p>
+  <p><strong>Sistema de gestão de ocorrências urbanas</strong></p>
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/dev-elipse/observacao?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/dev-elipse/observacao?style=for-the-badge)
@@ -27,18 +27,19 @@ O projeto está alinhado principalmente ao:
 
 ---
 
-## ⚠️ Escopo desta entrega
+## Escopo atual
 
-Este repositório está **intencionalmente simplificado** para atender apenas aos requisitos da **1ª Entrega** da AEP:
+O sistema registra e acompanha ocorrências urbanas, com API REST e persistência em MongoDB:
 
-- ✅ Coleção NoSQL **única** (`ocorrencias`), com objetos homogêneos e estrutura simples.
-- ✅ Operações básicas de **CRUD** completo.
-- ✅ Sem autenticação — todas as telas são públicas.
-- ❌ Múltiplas coleções relacionadas, documentos aninhados/listas de subdocumentos e demais evoluções da 2ª Entrega **ainda não foram implementadas** — ficam para a próxima etapa.
+- CRUD de ocorrências e de cidadãos, nas coleções `ocorrencias` e `cidadaos`.
+- Cidadãos com lista de endereços e e-mail único.
+- Vínculo opcional entre ocorrência e cidadão por `cidadaoId`.
+- Histórico automático das mudanças de status, com data.
+- Todas as telas e rotas são públicas, sem autenticação. O cadastro de cidadãos e a consulta ao histórico são disponibilizados pela API; as telas atuais continuam voltadas às ocorrências.
 
 ---
 
-## ✨ Funcionalidades (1ª Entrega)
+## ✨ Funcionalidades
 
 - Registro público de ocorrências (categoria, título, descrição, endereço e prioridade)
 - Consulta pública por protocolo (ID) ou por título
@@ -70,14 +71,14 @@ Este repositório está **intencionalmente simplificado** para atender apenas ao
 
 **Banco de Dados**
 
-- MongoDB — coleção única `ocorrencias`, com `$jsonSchema` de validação (`mongo-init.js`)
+- MongoDB — coleções `ocorrencias` e `cidadaos`, com `$jsonSchema` de validação e índice único de e-mail (`mongo-init.js`)
 
 **Testes**
 
 - JUnit 5 + MockMvc
 - JaCoCo (relatório e verificação automática de cobertura ≥ 70%)
 
-> A pasta `beta/` contém um protótipo standalone em Java puro (POO, sem framework) usado como exploração inicial do domínio. Não faz parte da PoC avaliada nesta entrega.
+> A pasta `beta/` contém um protótipo histórico em Java puro. Não participa da execução do backend e do frontend atuais.
 
 ---
 
@@ -110,13 +111,15 @@ Todas as telas são **públicas** (sem autenticação):
 
 ## 🔌 API REST
 
-| Método   | Rota                    | Descrição                    |
-| -------- | ----------------------- | ---------------------------- |
-| `POST`   | `/api/ocorrencias`      | Cria uma ocorrência          |
-| `GET`    | `/api/ocorrencias`      | Lista todas as ocorrências   |
-| `GET`    | `/api/ocorrencias/{id}` | Busca uma ocorrência pelo id |
-| `PUT`    | `/api/ocorrencias/{id}` | Atualiza uma ocorrência      |
-| `DELETE` | `/api/ocorrencias/{id}` | Remove uma ocorrência        |
+Os recursos `/api/ocorrencias` e `/api/cidadaos` oferecem:
+
+- `POST /api/{recurso}`: criação, com resposta 201 e cabeçalho `Location`.
+- `GET /api/{recurso}`: listagem, com resposta 200.
+- `GET /api/{recurso}/{id}`: consulta por identificador.
+- `PUT /api/{recurso}/{id}`: atualização com os campos obrigatórios do recurso.
+- `DELETE /api/{recurso}/{id}`: exclusão, com resposta 204.
+
+Consulte os contratos, exemplos e respostas de erro na [documentação técnica](docs/DOCUMENTACAO_TECNICA.md).
 
 ---
 
@@ -158,7 +161,7 @@ O script cria a colecao `cidadaos`, o indice unico `email` e exemplos com endere
 
 ```bash
 cd client
-npm install
+npm ci
 npm run dev
 ```
 
@@ -211,7 +214,30 @@ Get-Content -Raw -Encoding UTF8 tests/mongo-init.test.js | docker compose exec -
 
 Esse teste usa um banco temporario exclusivo e o remove ao terminar. Verifica schemas, subdocumentos, e-mail unico, exemplos relacionados, datas BSON, documentos antigos e reaplicacao sem duplicacao nem perda de dados. Executado com sucesso em 10/11/2026. E uma verificacao separada dos 44 testes Java e da cobertura JaCoCo.
 
----
+## Documentação
+
+- [Documentação técnica](docs/DOCUMENTACAO_TECNICA.md): arquitetura, modelo de dados, API, configuração e testes.
+- [Contrato da API](docs/contrato-api.md): regras de compatibilidade e respostas HTTP.
+- [Quadro de tarefas](docs/quadro-de-tarefas.md): situação local e pendências de revisão/publicação.
+- [Histórico de alterações](CHANGELOG.md): evolução do sistema e referências de commits.
+- [Roteiro de demonstração](docs/roteiro-demonstracao.md): apresentação e validação manual.
+- [Ficha do projeto](docs/ficha-projeto.md): participantes, links e versão apresentada.
+
+Os PDFs e o DOCX antigos de `docs/` foram preservados como referências históricas. A documentação técnica Markdown descreve a implementação atual. Os links do quadro remoto e do vídeo ainda precisam ser preenchidos pela equipe.
+
+## Estrutura do repositório
+
+```text
+client/                    Frontend React e TypeScript
+server/src/main/           API Java, configuração e modelo de dados
+server/src/test/           Testes JUnit e MockMvc
+tests/mongo-init.test.js   Teste dos schemas e exemplos MongoDB
+docs/                      Documentação e referências históricas
+mongo-init.js              Schemas, índice e dados de exemplo
+docker-compose.yml        Serviços e volume persistente
+CHANGELOG.md               Histórico de alterações
+beta/                      Protótipo histórico independente
+```
 
 ## 🤝 Contribuição
 
