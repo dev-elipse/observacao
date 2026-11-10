@@ -218,12 +218,14 @@ Esse teste usa um banco temporario exclusivo e o remove ao terminar. Verifica sc
 
 - [Documentação técnica](docs/DOCUMENTACAO_TECNICA.md): arquitetura, modelo de dados, API, configuração e testes.
 - [Contrato da API](docs/contrato-api.md): regras de compatibilidade e respostas HTTP.
-- [Quadro de tarefas](docs/quadro-de-tarefas.md): situação local e pendências de revisão/publicação.
+- [Quadro de tarefas](docs/quadro-de-tarefas.md): Kanban com critérios de aceite, evidências e responsabilidade compartilhada, sem atribuição fixa por etapa.
 - [Histórico de alterações](CHANGELOG.md): evolução do sistema e referências de commits.
 - [Roteiro de demonstração](docs/roteiro-demonstracao.md): apresentação e validação manual.
 - [Ficha do projeto](docs/ficha-projeto.md): participantes, links e versão apresentada.
 
 Os PDFs e o DOCX antigos de `docs/` foram preservados como referências históricas. A documentação técnica Markdown descreve a implementação atual. Os links do quadro remoto e do vídeo ainda precisam ser preenchidos pela equipe.
+
+O quadro remoto será vinculado a [Filipinfp/observacao](https://github.com/Filipinfp/observacao). A [área Projects](https://github.com/Filipinfp/observacao/projects) é o ponto de acesso; a criação/configuração do Project e sua URL específica ainda estão pendentes. O quadro local contém as tarefas a criar ou vincular, sem presumir que já existam no GitHub.
 
 ## Estrutura do repositório
 
