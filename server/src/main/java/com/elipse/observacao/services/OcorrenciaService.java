@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.ArrayList;
+import com.elipse.observacao.entities.HistoricoStatus;
 import com.elipse.observacao.repositories.CidadaoRepository;
 
 @Service
@@ -51,8 +53,15 @@ public class OcorrenciaService {
                 .orElseThrow(() -> new EntityNotFoundException("ocorrencia not found"));
 
         validarCidadao(dto.getCidadaoId());
+        var statusAnterior = entity.getStatus();
         OcorrenciaMapper.updateEntity(entity, dto);
         entity.preUpdate();
+        if (entity.getStatus() != statusAnterior) {
+            var historico = entity.getHistoricoStatus() == null
+                    ? new ArrayList<HistoricoStatus>() : new ArrayList<>(entity.getHistoricoStatus());
+            historico.add(new HistoricoStatus(entity.getStatus(), entity.getUpdatedAt()));
+            entity.setHistoricoStatus(historico);
+        }
 
         return OcorrenciaMapper.toDTO(ocorrenciaRepository.save(entity));
     }

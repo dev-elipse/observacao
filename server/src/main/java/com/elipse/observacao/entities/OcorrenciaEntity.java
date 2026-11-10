@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 /** Documento de ocorrencia com referencia opcional a cidadao. */
 @Document(collection = "ocorrencias")
@@ -46,6 +48,8 @@ public class OcorrenciaEntity {
     private OffsetDateTime updatedAt;
 
     private String cidadaoId;
+
+    private List<HistoricoStatus> historicoStatus = new ArrayList<>();
 
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();

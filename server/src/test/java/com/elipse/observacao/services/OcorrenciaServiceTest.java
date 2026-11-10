@@ -215,6 +215,59 @@ class OcorrenciaServiceTest {
         assertThat(repositoryStub.saveCalls).isEqualTo(1);
     }
 
+    @Test
+    void deveRegistrarMudancasEmOrdemSemDuplicarStatusRepetido() {
+        repositoryStub.findByIdResult = Optional.of(entity);
+        repositoryStub.saveReturnsArgument = true;
+        createDTO.setStatus(StatusOcorrencia.EM_ANALISE);
+        var primeira = ocorrenciaService.update("ocr-01", createDTO);
+        assertThat(primeira.getHistoricoStatus()).hasSize(1);
+        var dataPrimeira = primeira.getHistoricoStatus().get(0).getData();
+        assertThat(dataPrimeira).isEqualTo(primeira.getUpdatedAt());
+        ocorrenciaService.update("ocr-01", createDTO);
+        createDTO.setStatus(StatusOcorrencia.RESOLVIDA);
+        var segunda = ocorrenciaService.update("ocr-01", createDTO);
+        assertThat(segunda.getHistoricoStatus()).extracting(item -> item.getStatus())
+                .containsExactly(StatusOcorrencia.EM_ANALISE, StatusOcorrencia.RESOLVIDA);
+        assertThat(segunda.getHistoricoStatus().get(0).getData()).isEqualTo(dataPrimeira);
+        assertThat(segunda.getHistoricoStatus().get(1).getData()).isEqualTo(segunda.getUpdatedAt());
+        assertThat(entity.getHistoricoStatus()).hasSize(2);
+    }
+
+    @Test
+    void naoDeveCriarHistoricoNaCriacaoOuEdicaoSemMudancaDeStatus() {
+        repositoryStub.saveReturnsArgument = true;
+        assertThat(ocorrenciaService.create(createDTO).getHistoricoStatus()).isEmpty();
+        repositoryStub.findByIdResult = Optional.of(entity);
+        createDTO.setTitulo("Novo titulo");
+        assertThat(ocorrenciaService.update("ocr-01", createDTO).getHistoricoStatus()).isEmpty();
+        createDTO.setStatus(null);
+        assertThat(ocorrenciaService.update("ocr-01", createDTO).getHistoricoStatus()).isEmpty();
+        assertThat(entity.getStatus()).isEqualTo(StatusOcorrencia.ABERTA);
+    }
+
+    @Test
+    void deveAceitarOcorrenciaAntigaSemHistorico() {
+        entity.setHistoricoStatus(null);
+        repositoryStub.findByIdResult = Optional.of(entity);
+        repositoryStub.saveReturnsArgument = true;
+        assertThat(ocorrenciaService.findById("ocr-01").getHistoricoStatus()).isEmpty();
+        createDTO.setStatus(StatusOcorrencia.EM_ATENDIMENTO);
+        assertThat(ocorrenciaService.update("ocr-01", createDTO).getHistoricoStatus()).hasSize(1);
+    }
+
+    @Test
+    void naoDeveAlterarHistoricoQuandoValidacaoDoCidadaoFalha() {
+        repositoryStub.findByIdResult = Optional.of(entity);
+        createDTO.setCidadaoId("ausente");
+        createDTO.setStatus(StatusOcorrencia.RESOLVIDA);
+        assertThatThrownBy(() -> ocorrenciaService.update("ocr-01", createDTO))
+                .isInstanceOf(EntityNotFoundException.class);
+        assertThat(entity.getHistoricoStatus()).isEmpty();
+        assertThat(entity.getStatus()).isEqualTo(StatusOcorrencia.ABERTA);
+        assertThat(repositoryStub.saveCalls).isZero();
+    }
+
     private static final class RepositoryStub {
         private List<OcorrenciaEntity> findAllResult = List.of();
         private Optional<OcorrenciaEntity> findByIdResult = Optional.empty();

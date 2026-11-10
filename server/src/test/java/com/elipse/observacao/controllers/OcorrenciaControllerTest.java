@@ -180,6 +180,18 @@ class OcorrenciaControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void deveExporHistoricoNaConsultaExistente() throws Exception {
+        OcorrenciaResponseDTO response = buildResponseDTO();
+        response.setHistoricoStatus(List.of(new com.elipse.observacao.dtos.HistoricoStatusDTO(
+                StatusOcorrencia.EM_ANALISE, OffsetDateTime.parse("2026-11-10T12:00:00Z"))));
+        ocorrenciaService.findByIdResult = response;
+        mockMvc.perform(get("/api/ocorrencias/ocr-01"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.historicoStatus[0].status").value("EM_ANALISE"))
+                .andExpect(jsonPath("$.historicoStatus[0].data").value("2026-11-10T12:00:00Z"));
+    }
+
         static class StubOcorrenciaService extends OcorrenciaService {
                 private OcorrenciaResponseDTO createResult;
                 private EntityNotFoundException createException;

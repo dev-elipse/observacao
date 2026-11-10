@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ public class OcorrenciaResponseDTO {
 
     private String id;
     private String cidadaoId;
+    private List<HistoricoStatusDTO> historicoStatus;
     private String titulo;
     private String descricao;
     private CategoriaOcorrencia categoria;

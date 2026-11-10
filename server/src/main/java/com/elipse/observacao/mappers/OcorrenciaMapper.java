@@ -1,6 +1,8 @@
 package com.elipse.observacao.mappers;
 
 import com.elipse.observacao.dtos.EnderecoDTO;
+import com.elipse.observacao.dtos.HistoricoStatusDTO;
+import java.util.List;
 import com.elipse.observacao.dtos.OcorrenciaCreateDTO;
 import com.elipse.observacao.dtos.OcorrenciaResponseDTO;
 import com.elipse.observacao.entities.Endereco;
@@ -54,6 +56,9 @@ public class OcorrenciaMapper {
         OcorrenciaResponseDTO dto = new OcorrenciaResponseDTO();
 
         dto.setId(entity.getId());
+        dto.setHistoricoStatus(entity.getHistoricoStatus() == null ? List.of() :
+                entity.getHistoricoStatus().stream()
+                        .map(item -> new HistoricoStatusDTO(item.getStatus(), item.getData())).toList());
         dto.setCidadaoId(entity.getCidadaoId());
         dto.setTitulo(entity.getTitulo());
         dto.setDescricao(entity.getDescricao());
