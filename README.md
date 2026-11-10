@@ -192,7 +192,7 @@ cd server
 
 Relatorio: `server/target/site/jacoco/index.html`. Contadores reproduziveis: `server/target/site/jacoco/jacoco.xml`, elemento `counter` de tipo `LINE` no nivel do relatorio. Resultados dos testes: `server/target/surefire-reports/`.
 
-**Medicao em 10/11/2026:** 42 testes, zero falhas, erros ou testes ignorados; **223 de 227 linhas cobertas (98,24%)**. `clean verify` concluido com `BUILD SUCCESS`, usando Maven 3.9.16 pelo Wrapper, JDK 21 e JaCoCo 0.8.12. Neste ambiente foram informados `MAVEN_USER_HOME` e `-Dmaven.repo.local` para usar o cache local do usuario; nao houve alteracao do escopo da medicao.
+**Medicao em 10/11/2026:** 44 testes, zero falhas, erros ou testes ignorados; **223 de 227 linhas cobertas (98,24%)**. `clean verify` concluido com `BUILD SUCCESS`, usando Maven 3.9.16 pelo Wrapper, JDK 21 e JaCoCo 0.8.12. Neste ambiente foram informados `MAVEN_USER_HOME` e `-Dmaven.repo.local` para usar o cache local do usuario; nao houve alteracao do escopo da medicao.
 
 ### Validacao do MongoDB
 
@@ -209,7 +209,7 @@ docker compose cp mongo-init.js mongodb:/tmp/observacao-a4-init.js
 Get-Content -Raw -Encoding UTF8 tests/mongo-init.test.js | docker compose exec -T -e MONGO_INIT_SCRIPT=/tmp/observacao-a4-init.js mongodb mongosh --quiet --file /dev/stdin
 ```
 
-Esse teste usa um banco temporario exclusivo e o remove ao terminar. Verifica schemas, subdocumentos, e-mail unico, exemplos relacionados, datas BSON, documentos antigos e reaplicacao sem duplicacao nem perda de dados. Executado com sucesso em 10/11/2026. E uma verificacao separada dos 42 testes Java e da cobertura JaCoCo.
+Esse teste usa um banco temporario exclusivo e o remove ao terminar. Verifica schemas, subdocumentos, e-mail unico, exemplos relacionados, datas BSON, documentos antigos e reaplicacao sem duplicacao nem perda de dados. Executado com sucesso em 10/11/2026. E uma verificacao separada dos 44 testes Java e da cobertura JaCoCo.
 
 ---
 
