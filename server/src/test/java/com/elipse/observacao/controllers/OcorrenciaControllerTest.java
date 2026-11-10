@@ -196,7 +196,7 @@ class OcorrenciaControllerTest {
                 @Override
                 public OcorrenciaResponseDTO create(OcorrenciaCreateDTO dto) {
                         return createResult;
-                }d
+                }
 
                 @Override
                 public List<OcorrenciaResponseDTO> findAll() {
