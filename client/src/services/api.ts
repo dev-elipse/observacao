@@ -72,6 +72,7 @@ export interface OcorrenciaCreateDTO {
 
 export interface OcorrenciaResponseDTO {
   id: string;
+  cidadaoId?: string | null;
   titulo: string;
   descricao: string;
   categoria: CategoriaOcorrencia;
@@ -107,6 +108,17 @@ export const ocorrenciaService = {
 };
 
 export interface ContaDTO { id: string; nome: string; email: string; }
+export interface CidadaoPerfilDTO {
+  id: string;
+  nome: string;
+  cpf?: string | null;
+  email: string;
+  telefone?: string | null;
+  enderecos: (EnderecoDTO & { cidade: string; estado: string })[];
+}
+export const cidadaoService = {
+  getById: (id: string) => apiCall<CidadaoPerfilDTO>(`/cidadaos/${encodeURIComponent(id)}`),
+};
 export interface CadastroContaDTO { nome: string; cpf: string; email: string; telefone: string; senha: string; }
 export const contaService = {
   cadastrar: (data: CadastroContaDTO) => apiCall<ContaDTO>("/conta/cadastro", { method: "POST", body: JSON.stringify(data) }),

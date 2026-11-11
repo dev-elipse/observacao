@@ -9,6 +9,7 @@ import type {
   StatusOcorrencia,
 } from "../services/api";
 import Badge from "../components/Badge";
+import SolicitanteResumo from "../components/SolicitanteResumo";
 
 interface GestorPageProps {
   onBack: () => void;
@@ -531,6 +532,8 @@ const GestorPage: React.FC<GestorPageProps> = ({ onBack }) => {
             </div>
 
             <div className="p-8 space-y-5">
+              {formModal.editingId && <SolicitanteResumo key={formModal.editingId}
+                cidadaoId={ocorrencias.find(o => o.id === formModal.editingId)?.cidadaoId} />}
               {formError && (
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-sm text-red-700">{formError}</p>

@@ -23,6 +23,8 @@ public class CidadaoMapper {
         CidadaoResponseDTO dto = new CidadaoResponseDTO();
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
+        dto.setCpf(entity.getCpf());
+        dto.setTelefone(entity.getTelefone());
         dto.setEmail(entity.getEmail());
         dto.setEnderecos(entity.getEnderecos().stream().map(CidadaoMapper::toEnderecoDTO).toList());
         return dto;

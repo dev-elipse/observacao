@@ -57,6 +57,11 @@ class ContaControllerTest {
         assertThat(entity.getSenhaHash()).doesNotContain(cadastro.senha());
         assertThat(json.writeValueAsString(entity)).doesNotContain("senhaHash");
         assertThat(cidadaos.findById(entity.getId()).getEmail()).isEqualTo(cadastro.email());
+        var perfil = cidadaos.findById(entity.getId());
+        assertThat(perfil.getNome()).isEqualTo(cadastro.nome());
+        assertThat(perfil.getCpf()).isEqualTo(cadastro.cpf());
+        assertThat(perfil.getTelefone()).isEqualTo(cadastro.telefone());
+        assertThat(json.writeValueAsString(perfil)).doesNotContain("senha", "senhaHash");
     }
 
     @Test
