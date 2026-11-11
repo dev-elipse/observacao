@@ -175,7 +175,9 @@ class OcorrenciaControllerTest {
         ocorrenciaService.createException = new EntityNotFoundException("cidadao not found");
         OcorrenciaCreateDTO dto = buildCreateDTO();
         dto.setCidadaoId("ausente");
-        mockMvc.perform(post("/api/ocorrencias").contentType(MediaType.APPLICATION_JSON)
+        var sessao = new org.springframework.mock.web.MockHttpSession();
+        sessao.setAttribute(ContaController.CIDADAO_SESSAO, "ausente");
+        mockMvc.perform(post("/api/ocorrencias").session(sessao).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound());
     }
@@ -190,6 +192,19 @@ class OcorrenciaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.historicoStatus[0].status").value("EM_ANALISE"))
                 .andExpect(jsonPath("$.historicoStatus[0].data").value("2026-11-10T12:00:00Z"));
+    }
+
+    @Test
+    void deveRejeitarIdentificacaoSemLoginOuDeOutraConta() throws Exception {
+        var dto = buildCreateDTO(); dto.setCidadaoId("outra-conta");
+        var sessao = new org.springframework.mock.web.MockHttpSession();
+        sessao.setAttribute(ContaController.CIDADAO_SESSAO, "minha-conta");
+        mockMvc.perform(post("/api/ocorrencias").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(post("/api/ocorrencias").session(sessao).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(put("/api/ocorrencias/ocr-01").session(sessao).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isUnauthorized());
     }
 
         static class StubOcorrenciaService extends OcorrenciaService {

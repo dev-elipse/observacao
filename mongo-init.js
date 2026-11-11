@@ -17,6 +17,9 @@ aplicarSchema("cidadaos", {
             required: ["nome", "email", "enderecos"],
             properties: {
                 nome: { bsonType: "string", minLength: 1 },
+                cpf: { bsonType: "string", pattern: "^[0-9]{11}$" },
+                telefone: { bsonType: "string", pattern: "^[0-9]{10,11}$" },
+                senhaHash: { bsonType: "string", minLength: 1 },
                 email: { bsonType: "string", minLength: 1 },
                 enderecos: {
                     bsonType: "array",

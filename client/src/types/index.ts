@@ -1,4 +1,4 @@
-export type Screen = "landing" | "cidadao" | "atendente" | "gestor";
+export type Screen = "landing" | "cidadao" | "atendente" | "gestor" | "cadastro" | "login";
 
 export type CategoriaOcorrencia =
   | "INFRAESTRUTURA"

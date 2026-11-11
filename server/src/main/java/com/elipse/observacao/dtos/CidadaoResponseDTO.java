@@ -9,6 +9,8 @@ import java.util.List;
 public class CidadaoResponseDTO {
     private String id;
     private String nome;
+    private String cpf;
+    private String telefone;
     private String email;
     private List<CidadaoEnderecoDTO> enderecos;
 }

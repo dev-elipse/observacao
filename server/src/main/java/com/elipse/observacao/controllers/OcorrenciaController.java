@@ -25,8 +25,17 @@ public class OcorrenciaController {
         return ResponseEntity.notFound().build();
     }
 
+    private void validarIdentificacao(String id, jakarta.servlet.http.HttpServletRequest request) {
+        if (id == null) return;
+        var session = request.getSession(false);
+        if (session == null || !id.equals(session.getAttribute(ContaController.CIDADAO_SESSAO))) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @PostMapping
-    public ResponseEntity<OcorrenciaResponseDTO> create(@Valid @RequestBody OcorrenciaCreateDTO dto) {
+    public ResponseEntity<OcorrenciaResponseDTO> create(@Valid @RequestBody OcorrenciaCreateDTO dto, jakarta.servlet.http.HttpServletRequest request) {
+        validarIdentificacao(dto.getCidadaoId(), request);
         OcorrenciaResponseDTO response = ocorrenciaService.create(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -51,7 +60,8 @@ public class OcorrenciaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OcorrenciaResponseDTO> update(
-            @PathVariable String id, @Valid @RequestBody OcorrenciaCreateDTO dto) {
+            @PathVariable String id, @Valid @RequestBody OcorrenciaCreateDTO dto, jakarta.servlet.http.HttpServletRequest request) {
+        validarIdentificacao(dto.getCidadaoId(), request);
         try {
             return ResponseEntity.ok(ocorrenciaService.update(id, dto));
         } catch (EntityNotFoundException e) {

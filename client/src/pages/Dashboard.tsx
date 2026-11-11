@@ -8,10 +8,12 @@ import type {
 } from "../services/api";
 import type { FilterType } from "../types";
 import Badge from "../components/Badge";
+import type { ContaDTO } from "../services/api";
 
 interface DashboardProps {
   onBack: () => void;
   protocoloInicial?: string;
+  conta: ContaDTO | null;
 }
 
 // Mapa de categoria do backend → ícone do frontend
@@ -38,8 +40,9 @@ const PRIORIDADE_COLOR: Record<string, string> = {
   ALTA: "bg-orange-100 text-orange-700",
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ onBack, protocoloInicial }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onBack, protocoloInicial, conta }) => {
   const [filter, setFilter] = useState<FilterType>("todas");
+  const [identificar, setIdentificar] = useState(false);
   const [busca, setBusca] = useState(protocoloInicial ?? "");
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -97,6 +100,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack, protocoloInicial }) => {
 
   const resetForm = () => {
     setShowRequestModal(false);
+    setIdentificar(false);
     setSelectedCategory("");
     setRequestRua("");
     setRequestNumero("");
@@ -127,6 +131,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack, protocoloInicial }) => {
       setError("");
 
       await ocorrenciaService.create({
+        cidadaoId: identificar && conta ? conta.id : undefined,
         titulo: requestTitulo,
         descricao: requestDescription,
         categoria,
@@ -456,6 +461,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack, protocoloInicial }) => {
                   <p className="text-sm text-red-700">{error}</p>
                 </div>
               )}
+
+              <div className="rounded-xl border border-slate-200 p-4 text-sm">
+                {conta ? <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={identificar} onChange={e => setIdentificar(e.target.checked)} />
+                  Identificar esta ocorrencia como {conta.nome}
+                </label> : <p>Voce pode registrar sem cadastro. Para se identificar, entre na sua conta pelo menu inicial antes de registrar.</p>}
+                <p className="mt-2 text-slate-500">Sem selecionar esta opcao, a ocorrencia sera enviada sem vinculo com sua conta.</p>
+              </div>
 
               {!selectedCategory ? (
                 <div>

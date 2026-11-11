@@ -9,6 +9,7 @@ const API_PREFIX = `${API_BASE_URL}/api`;
 
 async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_PREFIX}${endpoint}`, {
+    credentials: "include",
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -60,6 +61,7 @@ export interface EnderecoDTO {
 }
 
 export interface OcorrenciaCreateDTO {
+  cidadaoId?: string;
   titulo: string;
   descricao: string;
   categoria: CategoriaOcorrencia;
@@ -70,6 +72,7 @@ export interface OcorrenciaCreateDTO {
 
 export interface OcorrenciaResponseDTO {
   id: string;
+  cidadaoId?: string | null;
   titulo: string;
   descricao: string;
   categoria: CategoriaOcorrencia;
@@ -102,4 +105,24 @@ export const ocorrenciaService = {
 
   delete: (id: string) =>
     apiCall<void>(`/ocorrencias/${id}`, { method: "DELETE" }),
+};
+
+export interface ContaDTO { id: string; nome: string; email: string; }
+export interface CidadaoPerfilDTO {
+  id: string;
+  nome: string;
+  cpf?: string | null;
+  email: string;
+  telefone?: string | null;
+  enderecos: (EnderecoDTO & { cidade: string; estado: string })[];
+}
+export const cidadaoService = {
+  getById: (id: string) => apiCall<CidadaoPerfilDTO>(`/cidadaos/${encodeURIComponent(id)}`),
+};
+export interface CadastroContaDTO { nome: string; cpf: string; email: string; telefone: string; senha: string; }
+export const contaService = {
+  cadastrar: (data: CadastroContaDTO) => apiCall<ContaDTO>("/conta/cadastro", { method: "POST", body: JSON.stringify(data) }),
+  entrar: (email: string, senha: string) => apiCall<ContaDTO>("/conta/login", { method: "POST", body: JSON.stringify({ email, senha }) }),
+  atual: () => apiCall<ContaDTO>("/conta"),
+  sair: () => apiCall<void>("/conta/logout", { method: "POST" }),
 };
