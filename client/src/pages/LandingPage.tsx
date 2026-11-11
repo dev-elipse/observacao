@@ -1,13 +1,20 @@
 import React, { useState } from "react";
+import type { ContaDTO } from "../services/api";
 import { CATEGORIES, STEPS } from "../constants";
 
 interface LandingPageProps {
+  conta: ContaDTO | null;
+  contaError: string;
+  onCadastro: () => void;
+  onLogin: () => void;
+  onSair: () => void;
   onCidadao: (protocolo?: string) => void;
   onAtendente: () => void;
   onGestor: () => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({
+  conta, contaError, onCadastro, onLogin, onSair,
   onCidadao,
   onAtendente,
   onGestor,
@@ -17,7 +24,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   return (
     <div className="font-sans bg-white min-h-screen text-slate-800">
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 flex items-center justify-between px-10 h-16">
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 flex flex-wrap gap-3 items-center justify-between px-10 min-h-16 py-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-[#0F2A4A] flex items-center justify-center">
             <i className="ti ti-eye text-white text-base" aria-hidden="true" />
@@ -27,7 +34,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
           </span>
         </div>
 
-        <div className="flex gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {conta ? <>
+            <span className="text-sm text-slate-600">Olá, {conta.nome}</span>
+            <button onClick={onSair} className="text-sm font-semibold text-[#2E7BD4]">Sair</button>
+          </> : <>
+            <button onClick={onCadastro} className="border border-slate-200 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-slate-50">Cadastrar-se</button>
+            <button onClick={onLogin} className="text-sm font-semibold text-[#2E7BD4] px-3 py-2">Entrar</button>
+          </>}
           <button
             onClick={onAtendente}
             className="border border-slate-200 rounded-lg px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 transition-colors"
@@ -42,6 +56,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
           </button>
         </div>
       </nav>
+
+      {contaError && <p role="alert" className="px-10 py-3 text-red-600">{contaError}</p>}
 
       {/* HERO */}
       <section className="max-w-[1180px] mx-auto px-10 py-20 grid grid-cols-[1fr_420px] gap-14 items-center">

@@ -40,15 +40,24 @@ public class CidadaoService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("cidadao not found"));
 
+        protegerConta(entity);
         CidadaoMapper.updateEntity(entity, dto);
 
         return CidadaoMapper.toDTO(cidadaoRepository.save(entity));
+    }
+
+    private void protegerConta(CidadaoEntity entity) {
+        if (entity.getSenhaHash() != null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "Conta nao pode ser alterada pelo cadastro publico");
+        }
     }
 
     public void delete(String id) {
         if (!cidadaoRepository.existsById(id)) {
             throw new EntityNotFoundException("cidadao not found");
         }
+        cidadaoRepository.findById(id).ifPresent(this::protegerConta);
         cidadaoRepository.deleteById(id);
     }
 }

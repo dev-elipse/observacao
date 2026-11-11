@@ -17,6 +17,10 @@ public class CidadaoEntity {
     @Id
     private String id = UUID.randomUUID().toString();
     private String nome;
+    private String cpf;
+    private String telefone;
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String senhaHash;
     @Indexed(unique = true)
     private String email;
     private List<CidadaoEndereco> enderecos = new ArrayList<>();
