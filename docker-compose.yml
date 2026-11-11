@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: observacao-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: observacao
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  backend:
+    build:
+      context: ./server
+    container_name: observacao-backend
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/observacao
+      MONGODB_DATABASE: observacao
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./client
+    container_name: observacao-frontend
+    depends_on:
+      - backend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:8080
+    ports:
+      - "5173:5173"
+
+volumes:
+  mongo_data:

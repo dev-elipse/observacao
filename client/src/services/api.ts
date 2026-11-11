@@ -1,306 +1,105 @@
-// API Base URL - pode ser configurado via variáveis de ambiente
-const API_BASE_URL = "http://localhost:8080/api";
+/**
+ * Cliente HTTP para a API REST do ObservAção.
+ * Coleção única "ocorrencias" (1ª Entrega da AEP) — sem autenticação.
+ */
 
-// Tipos genéricos para respostas
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-}
+const API_BASE_URL =
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8080";
+const API_PREFIX = `${API_BASE_URL}/api`;
 
-// Função auxiliar para requisições
-async function apiCall<T>(
-  endpoint: string,
-  options: RequestInit = {},
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-
-  const defaultHeaders: HeadersInit = {
-    "Content-Type": "application/json",
-  };
-
-  // Adicionar token se existir
-  const token = localStorage.getItem("authToken");
-  if (token) {
-    defaultHeaders["Authorization"] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(url, {
+async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const response = await fetch(`${API_PREFIX}${endpoint}`, {
     ...options,
     headers: {
-      ...defaultHeaders,
+      "Content-Type": "application/json",
       ...(options.headers || {}),
     },
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`API Error: ${response.statusText} - ${error}`);
+    const errorText = await response.text().catch(() => "");
+    throw new Error(
+      `Erro ${response.status} (${response.statusText})${errorText ? `: ${errorText}` : ""}`,
+    );
   }
 
-  // Verificar se há conteúdo para parsear
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
-    return response.json();
+    return response.json() as Promise<T>;
   }
-
-  return null as T;
+  return undefined as T;
 }
 
-// ============= USUÁRIOS =============
+// ─── tipos ────────────────────────────────────────────────────────────────
 
-export interface UsuarioDTO {
-  id: number;
-  nome: string;
-  email: string;
-  numeroTelefone?: string;
-  cargo?: string;
-  tipo: "CIDADAO" | "FUNCIONARIO_PUBLICO" | "GESTOR";
-}
-
-export const usuarioService = {
-  // Criar novo usuário (cadastro)
-  create: (data: Omit<UsuarioDTO, "id">) =>
-    apiCall<UsuarioDTO>("/usuarios", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-
-  // Obter todos os usuários
-  getAll: () =>
-    apiCall<UsuarioDTO[]>("/usuarios", {
-      method: "GET",
-    }),
-
-  // Obter usuário por ID
-  getById: (id: number) =>
-    apiCall<UsuarioDTO>(`/usuarios/${id}`, {
-      method: "GET",
-    }),
-
-  // Atualizar usuário
-  update: (id: number, data: Partial<UsuarioDTO>) =>
-    apiCall<UsuarioDTO>(`/usuarios/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    }),
-
-  // Deletar usuário
-  delete: (id: number) =>
-    apiCall<void>(`/usuarios/${id}`, {
-      method: "DELETE",
-    }),
-};
-
-// ============= SOLICITAÇÕES =============
-
-export type CategoriaSolicitacao =
-  | "INFRAESTRUTURA_URBANA"
-  | "LIMPEZA_URBANA"
-  | "MEIO_AMBIENTE"
-  | "ILUMINACAO_PUBLICA"
-  | "TRANSITO_MOBILIDADE"
-  | "SAUDE_PUBLICA"
-  | "LIMPEZA_URBANA"
-  | "EDUCACAO"
-  | "SEGURANCA_PUBLICA"
-  | "OBRAS_PUBLICAS"
-  | "SANEAMENTO"
-  | "SERVICOS_PUBLICOS"
+export type CategoriaOcorrencia =
+  | "INFRAESTRUTURA"
+  | "ILUMINACAO"
+  | "LIMPEZA"
+  | "SINALIZACAO"
+  | "CALCADA"
+  | "ARBORIZACAO"
   | "OUTROS";
 
-export type PrioridadeSolicitacao = "BAIXA" | "MEDIA" | "ALTA" | "URGENTE";
+export type PrioridadeOcorrencia = "BAIXA" | "MEDIA" | "ALTA";
 
-export type StatusSolicitacao =
-  | "ABERTO"
-  | "EM_TRIAGEM"
-  | "EM_EXECUCAO"
-  | "AGUARDANDO_COMPLEMENTACAO"
-  | "CONCLUIDO"
-  | "CANCELADO"
-  | "REJEITADO";
-
-export interface SolicitacaoCreateDTO {
-  categoria: CategoriaSolicitacao;
-  descricao: string;
-  prioridade?: PrioridadeSolicitacao;
-  anonima?: boolean;
-  usuarioId?: number;
-  endereco?: string;
-  telefone?: string;
-}
-
-export interface SolicitacaoResponseDTO {
-  id: number;
-  categoria: CategoriaSolicitacao;
-  descricao: string;
-  prioridade: PrioridadeSolicitacao;
-  status: StatusSolicitacao;
-  anonima: boolean;
-  usuarioId?: number;
-  dataAbertura: string;
-  dataUltimaAtualizacao?: string;
-  observacoes?: string;
-  endereco?: string;
-  telefone?: string;
-  protocoloNumero?: string;
-}
-
-export const solicitacaoService = {
-  // Criar nova solicitação
-  create: (data: SolicitacaoCreateDTO) =>
-    apiCall<SolicitacaoResponseDTO>("/solicitacoes", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-
-  // Obter todas as solicitações
-  getAll: () =>
-    apiCall<SolicitacaoResponseDTO[]>("/solicitacoes", {
-      method: "GET",
-    }),
-
-  // Obter solicitação por ID
-  getById: (id: number) =>
-    apiCall<SolicitacaoResponseDTO>(`/solicitacoes/${id}`, {
-      method: "GET",
-    }),
-
-  // Atualizar solicitação
-  update: (id: number, data: Partial<SolicitacaoResponseDTO>) =>
-    apiCall<SolicitacaoResponseDTO>(`/solicitacoes/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    }),
-
-  // Deletar solicitação
-  delete: (id: number) =>
-    apiCall<void>(`/solicitacoes/${id}`, {
-      method: "DELETE",
-    }),
-};
-
-// ============= AUTENTICAÇÃO =============
-
-export interface LoginRequest {
-  email: string;
-  senha: string;
-}
-
-export interface LoginResponse {
-  usuario: UsuarioDTO;
-  token: string;
-}
-
-export const authService = {
-  // Login
-  login: (email: string, senha: string) =>
-    apiCall<LoginResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, senha }),
-    }),
-
-  // Registro
-  register: (data: Omit<UsuarioDTO, "id"> & { senha: string }) =>
-    apiCall<LoginResponse>("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-
-  // Logout
-  logout: () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("usuario");
-  },
-
-  // Verificar se usuário está autenticado
-  isAuthenticated: () => {
-    return !!localStorage.getItem("authToken");
-  },
-
-  // Obter usuário atual
-  getCurrentUser: () => {
-    const usuario = localStorage.getItem("usuario");
-    return usuario ? JSON.parse(usuario) : null;
-  },
-
-  // Salvar autenticação
-  saveAuth: (usuario: UsuarioDTO, token: string) => {
-    localStorage.setItem("usuario", JSON.stringify(usuario));
-    localStorage.setItem("authToken", token);
-  },
-};
-
-// ============= ENDEREÇOS =============
+export type StatusOcorrencia =
+  | "ABERTA"
+  | "EM_ANALISE"
+  | "EM_ATENDIMENTO"
+  | "RESOLVIDA";
 
 export interface EnderecoDTO {
-  id: number;
-  logradouro: string;
+  rua: string;
   numero: string;
-  complemento?: string;
   bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
 }
 
-export const enderecoService = {
-  create: (data: Omit<EnderecoDTO, "id">) =>
-    apiCall<EnderecoDTO>("/enderecos", {
+export interface OcorrenciaCreateDTO {
+  titulo: string;
+  descricao: string;
+  categoria: CategoriaOcorrencia;
+  endereco: EnderecoDTO;
+  prioridade?: PrioridadeOcorrencia;
+  status?: StatusOcorrencia;
+}
+
+export interface OcorrenciaResponseDTO {
+  id: string;
+  titulo: string;
+  descricao: string;
+  categoria: CategoriaOcorrencia;
+  endereco: EnderecoDTO;
+  prioridade: PrioridadeOcorrencia;
+  status: StatusOcorrencia;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── serviço ──────────────────────────────────────────────────────────────
+
+export const ocorrenciaService = {
+  create: (data: OcorrenciaCreateDTO) =>
+    apiCall<OcorrenciaResponseDTO>("/ocorrencias", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
-  getAll: () =>
-    apiCall<EnderecoDTO[]>("/enderecos", {
-      method: "GET",
-    }),
+  getAll: () => apiCall<OcorrenciaResponseDTO[]>("/ocorrencias", { method: "GET" }),
 
-  getById: (id: number) =>
-    apiCall<EnderecoDTO>(`/enderecos/${id}`, {
-      method: "GET",
-    }),
+  getById: (id: string) =>
+    apiCall<OcorrenciaResponseDTO>(`/ocorrencias/${id}`, { method: "GET" }),
 
-  update: (id: number, data: Partial<EnderecoDTO>) =>
-    apiCall<EnderecoDTO>(`/enderecos/${id}`, {
+  update: (id: string, data: OcorrenciaCreateDTO) =>
+    apiCall<OcorrenciaResponseDTO>(`/ocorrencias/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
-  delete: (id: number) =>
-    apiCall<void>(`/enderecos/${id}`, {
-      method: "DELETE",
-    }),
-};
-
-// ============= ANEXOS =============
-
-export interface AnexoDTO {
-  id: number;
-  nome: string;
-  url: string;
-  tipo: string;
-  solicitacaoId: number;
-}
-
-export const anexoService = {
-  create: (data: Omit<AnexoDTO, "id">) =>
-    apiCall<AnexoDTO>("/anexos", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-
-  getAll: () =>
-    apiCall<AnexoDTO[]>("/anexos", {
-      method: "GET",
-    }),
-
-  getById: (id: number) =>
-    apiCall<AnexoDTO>(`/anexos/${id}`, {
-      method: "GET",
-    }),
-
-  delete: (id: number) =>
-    apiCall<void>(`/anexos/${id}`, {
-      method: "DELETE",
-    }),
+  delete: (id: string) =>
+    apiCall<void>(`/ocorrencias/${id}`, { method: "DELETE" }),
 };
